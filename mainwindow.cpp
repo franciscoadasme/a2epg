@@ -3,6 +3,7 @@
 
 #include <QtCore>
 #include <QtGui>
+#include <QtWidgets>
 
 #include "epsignalscontroller.h"
 #include "apviewporthandler.h"
@@ -40,7 +41,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	setUpConnections();
 	setUpActionsAndMenus();
 
-	move(QApplication::desktop()->screen()->rect().center() - rect().center());
+    move(QApplication::desktop()->screen()->rect().center() - rect().center());
 
 	QCoreApplication::setOrganizationName("nosze");
 	QCoreApplication::setApplicationName("autoepg");
@@ -64,9 +65,9 @@ MainWindow *MainWindow::instance()
 void MainWindow::about()
 {
 	QMessageBox::about(this, "AutoEPG",
-					   "<p><strong style=\"font-size: 18px; line-height: 1em;\">AutoEPG 0.9</strong><br>"
+                       "<p><strong style=\"font-size: 18px; line-height: 1em;\">AutoEPG 0.9.1</strong><br>"
 					   "Automatic Processing of Electrical Penetration Graphs<br>"
-					   "<small style=\"color: #666;\">Build 95 ~ January 2012</small></p>"
+                       "<small style=\"color: #666;\">Build 96 ~ May 2013</small></p>"
 
 					   "<p>This application was developed by <a href=\"http://about.me/franciscoadasme\">Francisco Adasme</a>"
 					   " and <a href=\"http://about.me/camila.munoz\">Camila Mu&ntilde;oz</a>"
@@ -206,9 +207,15 @@ void MainWindow::openFile()
 {
 	QSettings settings;
 
+    QStringList filters;
+    filters << tr("All files (*)")
+            << tr("Electrical penetration signal (*.epg)")
+            << tr("PROBE Acquisition Data (*.D01)")
+            << tr("ASCII (*.dat)");
+
 	QString filePath = QFileDialog::getOpenFileName(this, tr("Open File"),
-														settings.value(LastLocationVisitedKey, QDir::homePath()).toString(),
-														tr("All files (*.dat *.epg);;Electrical penetration signal (*.epg);;.dat (*.dat)"));
+                                                    settings.value(LastLocationVisitedKey, QDir::homePath()).toString(),
+                                                    filters.join(";;"));
 	if (filePath.isEmpty()) return;
 	settings.setValue(LastLocationVisitedKey, QFileInfo(filePath).path());
 
@@ -226,7 +233,7 @@ void MainWindow::readingDidEnd(bool success, QObject *signal, QString msg)
 	if (success) {
 		EPSignalsController::pushSignal((EPSignal *)signal);
 	} else
-		QMessageBox::warning(this, "Writing error", msg);
+        QMessageBox::warning(this, "Reading error", msg);
 
 }
 

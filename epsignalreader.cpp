@@ -4,6 +4,13 @@
 
 #include <QDebug>
 
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <iomanip>
+
+using namespace std;
+
 #include "APGlobals.h"
 #include "aputils.h"
 #include "apstatuscontroller.h"
@@ -34,33 +41,63 @@ void EPSignalReader::dispatchReader(QString filePath, QObject *target, const cha
 
 void EPSignalReader::run()
 {
-	emit workDidBegin("Reading " + _epsignal->fileInfo().filePath());
+    QFileInfo fileInfo = _epsignal->fileInfo();
+    emit workDidBegin("Reading " + fileInfo.fileName());
 
-	if (_epsignal->fileInfo().suffix() == "epg") {
-		if (!readEPG()) return;
-	} else {
-		// since there isn't a epg file, just use filename as signal's name
-		_epsignal->setName(_epsignal->fileInfo().baseName());
-		_epsignal->setDatname(_epsignal->fileInfo().fileName());
-	}
+    if (_epsignal->fileType() == EPSignal::Unknown) {
+        errorMessage = "Unknown file type";
+        emitReadingError();
+        return;
+    }
 
-	QStringList filePaths = retrieveFilePaths();
-	emit workLengthDidChange(_epsignalLength * filePaths.count());
-	foreach (QString filePath, filePaths)
-		readDat(filePath);
+    QStringList filePaths = retrieveFilePaths();
+    emit workLengthDidChange(_epsignalLength * filePaths.count());
+#if DebugReading
+    qDebug() << filePaths;
+#endif
 
-	_epsignal->setChanged(false);
-	emit workDidEnd();
-	emit workDidEnd(true, _epsignal, _epsignal->fileInfo().filePath() + " read.");
+    BOOL success = true;
+    foreach (QString filePath, filePaths) {
+        success = readFile(filePath);
+        if (!success) break;
+    }
+
+    if (success) {
+        _epsignal->setChanged(false);
+        emit workDidEnd();
+        emit workDidEnd(success, _epsignal, fileInfo.fileName() + " read.");
+    } else {
+        emitReadingError();
+    }
 }
 
-void EPSignalReader::readDat(QString filePath)
+bool EPSignalReader::readBinary(QString filePath)
+{
+    ifstream file(qPrintable(filePath), ios::binary);
+
+    if (file) {
+        string junk;
+        for (int i = 0; i < 3; i++) getline(file, junk);
+
+        while(not file.eof()) {
+            char *bfr = new char[4];
+            if (file.read(bfr, 4))
+                _epsignal->pushPoint(reinterpret_cast<float&>(*bfr));
+            delete[] bfr;
+        }
+        file.close();
+        return true;
+    } else {
+        return false;
+    }
+}
+
+bool EPSignalReader::readDat(QString filePath)
 {
 	QFile file(filePath);
     if (!file.open(QFile::ReadOnly)) {
-		emit workDidEnd(false, NULL,
-						tr("Can't open file at %1.").arg(filePath));
-		return;
+        errorMessage = tr("Can't open file at %1.").arg(filePath);
+        return false;
     }
 
 	emit workDidBegin(tr("Reading %1").arg(QFileInfo(filePath).fileName()));
@@ -70,21 +107,32 @@ void EPSignalReader::readDat(QString filePath)
 		float value = stream.readLine().toFloat();
 		_epsignal->pushPoint(value);
 
-		if (value > _epsignal->maximum())
-			_epsignal->setMaximum(value);
-		else if (value < _epsignal->minimum())
-			_epsignal->setMinimum(value);
-
 		if (_epsignalLength != APEmpty && ++totalProgress % 500 == 0) // report each 500 lines
 			emit progressDidChange(totalProgress);
 	}
+
+    return true;
+}
+
+bool EPSignalReader::readFile(QString filePath)
+{
+    switch (_epsignal->fileType()) {
+    case EPSignal::Acquisition:
+        return readBinary(filePath);
+    case EPSignal::Dat:
+        return readDat(filePath);
+    case EPSignal::EPG:
+        return readEPG();
+    default:
+        return false;
+    }
 }
 
 bool EPSignalReader::readEPG()
 {
 	QFile file(_epsignal->fileInfo().filePath());
     if (!file.open(QFile::ReadOnly)) {
-		emitReadingErrorWithInfo(file.errorString());
+        errorMessage = file.errorString();
 		return false;
 	}
 
@@ -92,7 +140,7 @@ bool EPSignalReader::readEPG()
 	if (_xmlReader.readNextStartElement()) {
 		if (_xmlReader.name() != "epsignal"
 			|| _xmlReader.attributes().value("version") != "1.0") {
-			emitReadingErrorWithInfo(tr("Parse error: either file does not follow epg format or it's not version 1.0."));
+            errorMessage = tr("Parse error: either file does not follow epg format or it's not version 1.0.");
 			return false;
 		}
 
@@ -109,7 +157,7 @@ bool EPSignalReader::readEPG()
 	}
 
 	if (_xmlReader.hasError()) {
-		emitReadingErrorWithInfo(_xmlReader.errorString());
+        errorMessage = _xmlReader.errorString();
 		return false;
 	}
 
@@ -119,7 +167,7 @@ bool EPSignalReader::readEPG()
 bool EPSignalReader::readInfo()
 {
 	if (_xmlReader.isStartElement() && _xmlReader.name() != "info") {
-		emitReadingErrorWithInfo(tr("Parse error: file does not follow epg format."));
+        errorMessage = tr("Parse error: file does not follow epg format.");
 		return false;
 	}
 
@@ -146,7 +194,7 @@ bool EPSignalReader::readInfo()
 bool EPSignalReader::readSegment()
 {
 	if (_xmlReader.isStartElement() && _xmlReader.name() != "segment") {
-		emitReadingErrorWithInfo(tr("Parse error: file does not follow epg format."));
+        errorMessage = tr("Parse error: file does not follow epg format.");
 		return false;
 	}
 
@@ -174,7 +222,7 @@ bool EPSignalReader::readSegment()
 			_xmlReader.skipCurrentElement();
 
 		if (!transformationWasOk) {
-			emitReadingErrorWithInfo(tr("Error while reading either segment start or end."));
+            errorMessage = tr("Error while reading either segment start or end.");
 			return false;
 		}
 	}
@@ -193,7 +241,7 @@ bool EPSignalReader::readSegment()
 bool EPSignalReader::readSegments()
 {
 	if(_xmlReader.isStartElement() && _xmlReader.name() != "segments") {
-		emitReadingErrorWithInfo(tr("Parse error: file does not follow epg format."));
+        errorMessage = tr("Parse error: file does not follow epg format.");
 		return false;
 	}
 
@@ -208,30 +256,37 @@ bool EPSignalReader::readSegments()
 
 QStringList EPSignalReader::retrieveFilePaths()
 {
-	QStringList filePaths;
-	// if .epg wasn't found, so assume current file is .dat
-	filePaths << (_datFilepath.isEmpty() ? _epsignal->fileInfo().filePath() : _datFilepath);
+    QString filePath = _epsignal->fileInfo().filePath();
+    QStringList filePaths;
 
-	if (filePaths.first().endsWith(".1.dat")
-			|| filePaths.first().endsWith("_01.dat")) {
-		for (int i = 2; ; i++) {
-			QString filePath = filePaths.first();
-			filePath.replace(".1.dat", QString(".%1.dat").arg(i));
-			filePath.replace("_01.dat", QString("_%1%2.dat").arg(i < 10 ? "0" : "").arg(i));
+    QString pattern;
+    switch (_epsignal->fileType()) {
+    case EPSignal::Dat:
+        pattern = tr("(?<=(\\.|0))\\d(?=\\.dat)");
+        break;
+    case EPSignal::Acquisition:
+        pattern = tr("(?<=D0)\\d");
+        break;
+    default:
+        filePaths << filePath;
+        return filePaths;
+    }
 
-			if (QFileInfo(filePath).exists())
-				filePaths << filePath;
-			else break;
-		}
-	}
+    QRegularExpression rx(pattern);
+    for (int i = 1; i < 10; i++) {
+        QString path = filePath.replace( rx, QString::number(i) );
+        if (QFileInfo(path).exists())
+            filePaths << path;
+        else break;
+    }
 
 	return filePaths;
 }
 
-void EPSignalReader::emitReadingErrorWithInfo(QString info)
+void EPSignalReader::emitReadingError()
 {
 	emit workDidEnd(false, NULL,
 					   tr("Can't read file %1:\n\n%2")
 					   .arg(_epsignal->fileInfo().fileName())
-					   .arg(info));
+                       .arg(errorMessage));
 }

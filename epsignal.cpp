@@ -7,6 +7,7 @@ EPSignal::EPSignal(QString filepath, int id, QObject *parent) :
 	_id(id)
 {
 	_fileInfo = QFileInfo(filepath);
+    _fileType = deriveFileType(_fileInfo);
 	_profile = new EPSProfile(this);
 	_changed = false;
 
@@ -34,6 +35,11 @@ QString EPSignal::datname()
 QFileInfo EPSignal::fileInfo()
 {
 	return _fileInfo;
+}
+
+EPSignal::FileType EPSignal::fileType()
+{
+    return _fileType;
 }
 
 bool EPSignal::hasChanged()
@@ -73,6 +79,9 @@ float EPSignal::minimum()
 
 QString EPSignal::name()
 {
+    if (_name == NULL) {
+        _name = _fileInfo.baseName();
+    }
 	return _name;
 }
 
@@ -99,6 +108,11 @@ void EPSignal::profileDidChanged()
 void EPSignal::pushPoint(float point)
 {
 	_points.append(point);
+
+    if (point > _maximum)
+        _maximum = point;
+    else if (point < _minimum)
+        _minimum = point;
 }
 
 void EPSignal::setComments(QString aComment)

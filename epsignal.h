@@ -16,6 +16,13 @@ class EPSignal : public QObject
 public:
 	explicit EPSignal(QString filepath, int id = APNotFound, QObject *parent = 0);
 
+    enum FileType {
+        EPG,
+        Dat,
+        Acquisition,
+        Unknown
+    };
+
 	// accessors
 	int id();
 	QString name();
@@ -32,6 +39,7 @@ public:
 	uint numberOfPoints();
 	EPSProfile *profile();
 	bool hasMorePointsThan(uint number);
+    FileType fileType();
 
 	bool hasChanged();
 	void setChanged(bool changed);
@@ -63,10 +71,21 @@ private:
 	QString _comments;
 	QFileInfo _fileInfo;
 	bool _changed;
+    FileType _fileType;
 
 	QList<float> _points;
 	EPSProfile *_profile;
 	float _minimum, _maximum;
+
+    inline static FileType deriveFileType(QFileInfo fileInfo) {
+        if (fileInfo.suffix() == "epg") return EPSignal::EPG;
+        if (fileInfo.suffix() == "dat") return EPSignal::Dat;
+
+        static QRegExp rx("((.+)?\\.)?D0\\d");
+        if (rx.exactMatch(fileInfo.fileName())) return EPSignal::Acquisition;
+
+        return EPSignal::Unknown;
+    }
 };
 
 #endif // EPSIGNAL_H

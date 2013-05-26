@@ -2,6 +2,7 @@
 #define APSEGMENTDIALOG_H
 
 #include <QtGui>
+#include <QtWidgets>
 
 #include "epsegment.h"
 

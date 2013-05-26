@@ -18,19 +18,22 @@ protected:
 	void run();
 
 private:
-	QString _datFilepath;
+    QString _datFilepath;
+    QString errorMessage;
     EPSignal *_epsignal;
 	int _epsignalLength;
 	QXmlStreamReader _xmlReader;
 	int totalProgress;
 
-	void readDat(QString filePath);
+    bool readFile(QString filePath);
+    bool readBinary(QString filePath);
+    bool readDat(QString filePath);
 	bool readEPG();
 	bool readInfo();
 	bool readSegment();
 	bool readSegments();
-	void emitReadingErrorWithInfo(QString info = QString());
-	QStringList retrieveFilePaths();
+    void emitReadingError();
+    QStringList retrieveFilePaths();
 };
 
 #endif // EPSIGNALREADER_H

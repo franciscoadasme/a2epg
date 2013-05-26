@@ -49,11 +49,11 @@ inline Slope slopeWithLeftRightHeightAndDirection(int left, int right, float hei
 }
 
 // debug
-#define DebugReading 0
+#define DebugReading 1
 
-inline const static int numberOfPointsInOneHour() { return 3600 / APSampleRate; }
-inline const static float transformSecondsToNumberOfPoints(float seconds) { return seconds / APSampleRate; }
-inline const static float transformNumberOfPointsToSeconds(float numberOfPoints) { return numberOfPoints * APSampleRate; }
+inline static int numberOfPointsInOneHour() { return 3600 / APSampleRate; }
+inline static float transformSecondsToNumberOfPoints(float seconds) { return seconds / APSampleRate; }
+inline static float transformNumberOfPointsToSeconds(float numberOfPoints) { return numberOfPoints * APSampleRate; }
 
 // settings keys
 #define OpenPanoramicOnSignalChangeKey "OpenPanoramicOnSignalChange"

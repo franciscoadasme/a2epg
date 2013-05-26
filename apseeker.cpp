@@ -1,6 +1,7 @@
 #include "apseeker.h"
 
 #include <QtCore>
+#include <cmath>
 
 #include "apnpseeker.h"
 #include "appdseeker.h"
@@ -48,7 +49,7 @@ void APSeeker::cleanUpProposedSegments()
 	for (int i = 0; i < _proposedSegments.count(); i++) {
 		QPair<uint, uint> *pair = _proposedSegments.at(i);
 
-		if (qAbs(pair->second - pair->first + 1) < param("duration")) {
+        if (std::abs(pair->second - pair->first + 1) < param("duration")) {
 			_proposedSegments.removeAt(i);
 			i--;
 			delete pair;

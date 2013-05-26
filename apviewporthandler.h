@@ -25,8 +25,8 @@ public:
 	float transform(float num, Qt::Orientation orientation = Qt::Horizontal);
 	void move(int step);
 
-	inline const static float horizontalScale() { return 1; }
-	inline const static float verticalScale() { return 64; }
+    inline static float horizontalScale() { return 1; }
+    inline static float verticalScale() { return 64; }
 
 signals:
 	void zoomDidChange(); // do not send zoom values, since this signal can be connected to update() slot in widgets

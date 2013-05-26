@@ -3,6 +3,7 @@
 
 #include <QtCore>
 #include <QtGui>
+#include <QMainWindow>
 
 #include "epsignal.h"
 #include "epsignalwidget.h"
