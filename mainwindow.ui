@@ -90,7 +90,7 @@
      <x>0</x>
      <y>0</y>
      <width>656</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
    <property name="defaultUp">
@@ -285,7 +285,7 @@ padding: 2px 4px;
    <property name="minimumSize">
     <size>
      <width>226</width>
-     <height>357</height>
+     <height>359</height>
     </size>
    </property>
    <property name="floating">

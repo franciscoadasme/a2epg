@@ -56,7 +56,7 @@ void EPSignalReader::run()
     qDebug() << filePaths;
 #endif
 
-    BOOL success = true;
+    bool success = true;
     foreach (QString filePath, filePaths) {
         success = readFile(filePath);
         if (!success) break;

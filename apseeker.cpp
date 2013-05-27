@@ -49,7 +49,7 @@ void APSeeker::cleanUpProposedSegments()
 	for (int i = 0; i < _proposedSegments.count(); i++) {
 		QPair<uint, uint> *pair = _proposedSegments.at(i);
 
-        if (std::abs(pair->second - pair->first + 1) < param("duration")) {
+        if (std::abs((float)(pair->second - pair->first + 1)) < param("duration")) {
 			_proposedSegments.removeAt(i);
 			i--;
 			delete pair;

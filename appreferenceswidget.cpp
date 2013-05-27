@@ -105,7 +105,7 @@ void APPreferencesWidget::on_createSegmentTypeButton_clicked()
 									   "Are you sure you want to continue?",
 									   QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Ok);
 		if (ret == QMessageBox::Ok)
-			text.remove(QRegExp(QString::fromUtf8("[-\\s`~!@#$%^&*()_—+=|:;<>«»,.?/{}\'\"\\\[\\]]")));
+			text.remove(QRegExp(QString::fromUtf8("[-\\s`~!@#$%^&*()_â€”+=|:;<>Â«Â»,.?/{}\'\"\\\[\\]]")));
 		else return;
 	}
 
