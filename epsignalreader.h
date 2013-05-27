@@ -22,7 +22,7 @@ private:
     QString errorMessage;
     EPSignal *_epsignal;
 	int _epsignalLength;
-	QXmlStreamReader _xmlReader;
+    QXmlStreamReader *_xmlReader;
 	int totalProgress;
 
     bool readFile(QString filePath);

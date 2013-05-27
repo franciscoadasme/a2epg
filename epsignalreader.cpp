@@ -136,37 +136,49 @@ bool EPSignalReader::readEPG()
 		return false;
 	}
 
-	_xmlReader.setDevice(&file);
-	if (_xmlReader.readNextStartElement()) {
-		if (_xmlReader.name() != "epsignal"
-			|| _xmlReader.attributes().value("version") != "1.0") {
+    QDataStream in(&file);
+    QString header;
+    in >> header;
+
+    float p;
+    while (!in.atEnd()) {
+        in >> p;
+        _epsignal->pushPoint(p);
+    }
+
+    _xmlReader = new QXmlStreamReader(header);
+    if (_xmlReader->readNextStartElement()) {
+        if (_xmlReader->name() != "epsignal"
+            || _xmlReader->attributes().value("version") != "1.0") {
             errorMessage = tr("Parse error: either file does not follow epg format or it's not version 1.0.");
-			return false;
-		}
-
-		while (_xmlReader.readNextStartElement()) {
-			if (_xmlReader.name() == "info") {
-				if (!readInfo())
-					return false;
-			} else if (_xmlReader.name() == "segments") {
-				if (!readSegments())
-					return false;
-			} else
-				_xmlReader.skipCurrentElement();
+            return false;
         }
-	}
 
-	if (_xmlReader.hasError()) {
-        errorMessage = _xmlReader.errorString();
-		return false;
-	}
+        while (_xmlReader->readNextStartElement()) {
+            if (_xmlReader->name() == "info") {
+                if (!readInfo())
+                    return false;
+            } else if (_xmlReader->name() == "segments") {
+                if (!readSegments())
+                    return false;
+            } else
+                _xmlReader->skipCurrentElement();
+        }
+    }
+
+    if (_xmlReader->hasError()) {
+        errorMessage = _xmlReader->errorString();
+        return false;
+    }
+    _xmlReader->clear();
+    delete _xmlReader;
 
 	return true;
 }
 
 bool EPSignalReader::readInfo()
 {
-	if (_xmlReader.isStartElement() && _xmlReader.name() != "info") {
+    if (_xmlReader->isStartElement() && _xmlReader->name() != "info") {
         errorMessage = tr("Parse error: file does not follow epg format.");
 		return false;
 	}
@@ -175,25 +187,25 @@ bool EPSignalReader::readInfo()
 	qDebug() << "EPSignalReader::readInfo()";
 #endif
 
-	while (_xmlReader.readNextStartElement()) {
-		if (_xmlReader.name() == "name")
-			_epsignal->setName(_xmlReader.readElementText());
-		else if (_xmlReader.name() == "comments")
-			_epsignal->setComments(_xmlReader.readElementText());
-		else if (_xmlReader.name() == "datname") {
-			_epsignal->setDatname(_xmlReader.readElementText());
+    while (_xmlReader->readNextStartElement()) {
+        if (_xmlReader->name() == "name")
+            _epsignal->setName(_xmlReader->readElementText());
+        else if (_xmlReader->name() == "comments")
+            _epsignal->setComments(_xmlReader->readElementText());
+        else if (_xmlReader->name() == "datname") {
+            _epsignal->setDatname(_xmlReader->readElementText());
 			_datFilepath = _epsignal->fileInfo().path() + "/" + _epsignal->datname();
-		} else if (_xmlReader.name() == "length")
-			_epsignalLength = _xmlReader.readElementText().toInt();
+        } else if (_xmlReader->name() == "length")
+            _epsignalLength = _xmlReader->readElementText().toInt();
         else
-			_xmlReader.skipCurrentElement();
+            _xmlReader->skipCurrentElement();
     }
 	return true;
 }
 
 bool EPSignalReader::readSegment()
 {
-	if (_xmlReader.isStartElement() && _xmlReader.name() != "segment") {
+    if (_xmlReader->isStartElement() && _xmlReader->name() != "segment") {
         errorMessage = tr("Parse error: file does not follow epg format.");
 		return false;
 	}
@@ -209,17 +221,17 @@ bool EPSignalReader::readSegment()
 
 	bool transformationWasOk = true;
 
-	while (_xmlReader.readNextStartElement()) {
-		if (_xmlReader.name() == "type")
-			type = APUtils::segmentTypeFromString(_xmlReader.readElementText());
-		else if (_xmlReader.name() == "start") {
-			start = _xmlReader.readElementText().toUInt(&transformationWasOk);
-		} else if (_xmlReader.name() == "end")
-			end = _xmlReader.readElementText().toUInt(&transformationWasOk);
-		else if (_xmlReader.name() == "comments")
-			comments = _xmlReader.readElementText();
+    while (_xmlReader->readNextStartElement()) {
+        if (_xmlReader->name() == "type")
+            type = APUtils::segmentTypeFromString(_xmlReader->readElementText());
+        else if (_xmlReader->name() == "start") {
+            start = _xmlReader->readElementText().toUInt(&transformationWasOk);
+        } else if (_xmlReader->name() == "end")
+            end = _xmlReader->readElementText().toUInt(&transformationWasOk);
+        else if (_xmlReader->name() == "comments")
+            comments = _xmlReader->readElementText();
 		else
-			_xmlReader.skipCurrentElement();
+            _xmlReader->skipCurrentElement();
 
 		if (!transformationWasOk) {
             errorMessage = tr("Error while reading either segment start or end.");
@@ -240,7 +252,7 @@ bool EPSignalReader::readSegment()
 
 bool EPSignalReader::readSegments()
 {
-	if(_xmlReader.isStartElement() && _xmlReader.name() != "segments") {
+    if(_xmlReader->isStartElement() && _xmlReader->name() != "segments") {
         errorMessage = tr("Parse error: file does not follow epg format.");
 		return false;
 	}
@@ -248,7 +260,7 @@ bool EPSignalReader::readSegments()
 #if DebugReading
 	qDebug() << "EPSignalReader::readSegments()";
 #endif
-	while (_xmlReader.readNextStartElement())
+    while (_xmlReader->readNextStartElement())
 		if (!readSegment())
 			return false;
 	return true;

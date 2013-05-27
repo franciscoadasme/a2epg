@@ -30,7 +30,7 @@ private:
 	EPSignal *_epsignal;
 	QFileInfo _fileInfo;
 	int _options;
-	QXmlStreamWriter xmlWriter;
+    QXmlStreamWriter *xmlWriter;
 
 	QFile *createFile(QString filePath);
 

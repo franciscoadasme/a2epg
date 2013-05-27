@@ -32,7 +32,7 @@ EPSignalWriter *EPSignalWriter::writer(QString filepath, EPSignal *eps, int opti
 QFile *EPSignalWriter::createFile(QString filePath)
 {
 	QFile *file = new QFile(filePath);
-	if (!file->open(QFile::WriteOnly | QFile::Text)) {
+    if (!file->open(QFile::WriteOnly/* | QFile::Text*/)) {
 		emit workDidEnd(false, NULL, tr("Can't create file at %1:\n\n%2")
 						.arg(filePath)
 						.arg(file->errorString()));
@@ -110,49 +110,53 @@ void EPSignalWriter::writeEpg()
 {
 	_epsignal->setFileInfo(_fileInfo);
 
-	QFile *file = createFile(_fileInfo.filePath());
-	if (!file) return;
+    QString header;
+    xmlWriter = new QXmlStreamWriter(&header);
+    xmlWriter->writeStartDocument();
+    xmlWriter->writeDTD("<!DOCTYPE epsignal>");
 
-	xmlWriter.setDevice(file);
-	xmlWriter.setAutoFormatting(true);
-	xmlWriter.writeStartDocument();
-	xmlWriter.writeDTD("<!DOCTYPE epsignal>");
-
-	xmlWriter.writeStartElement("epsignal");
-	xmlWriter.writeAttribute("version", "1.0");
+    xmlWriter->writeStartElement("epsignal");
+    xmlWriter->writeAttribute("version", "1.0");
 
 	writeInfo();
 	writeSegments();
 
-	xmlWriter.writeEndElement();
+    xmlWriter->writeEndElement();
+    xmlWriter->writeEndDocument();
+    delete xmlWriter;
 
-	xmlWriter.writeEndDocument();
+    QFile *file = createFile(_fileInfo.filePath());
+    if (!file) return;
+    QDataStream out(file);
+    out << header;
+    foreach (float p, _epsignal->points()) {
+        out << p;
+    }
 
 	file->close();
 }
 
 void EPSignalWriter::writeInfo()
 {
-	xmlWriter.writeStartElement("info");
+    xmlWriter->writeStartElement("info");
 
-	xmlWriter.writeTextElement("name", _epsignal->name());
-	xmlWriter.writeTextElement("comments", _epsignal->comments());
-	xmlWriter.writeTextElement("datname", _epsignal->datname());
-	xmlWriter.writeTextElement("length", QString::number(_epsignal->numberOfPoints()));
+    xmlWriter->writeTextElement("name", _epsignal->name());
+    xmlWriter->writeTextElement("comments", _epsignal->comments());
+    xmlWriter->writeTextElement("length", QString::number(_epsignal->numberOfPoints()));
 
-	xmlWriter.writeEndElement();
+    xmlWriter->writeEndElement();
 }
 
 void EPSignalWriter::writeSegment(EPSegment *segment)
 {
-	xmlWriter.writeStartElement("segment");
+    xmlWriter->writeStartElement("segment");
 
-	xmlWriter.writeTextElement("type", segment->type()->name());
-	xmlWriter.writeTextElement("start", QString::number(segment->start()));
-	xmlWriter.writeTextElement("end", QString::number(segment->end()));
-	xmlWriter.writeTextElement("comments", segment->comments());
+    xmlWriter->writeTextElement("type", segment->type()->name());
+    xmlWriter->writeTextElement("start", QString::number(segment->start()));
+    xmlWriter->writeTextElement("end", QString::number(segment->end()));
+    xmlWriter->writeTextElement("comments", segment->comments());
 
-	xmlWriter.writeEndElement();
+    xmlWriter->writeEndElement();
 }
 
 void EPSignalWriter::writeSegments()
@@ -160,11 +164,11 @@ void EPSignalWriter::writeSegments()
 	if (_epsignal->profile()->isEmpty())
 		return;
 
-	xmlWriter.writeStartElement("segments");
-	xmlWriter.writeAttribute("count", QString::number(_epsignal->profile()->numberOfSegmentsOfType(All)));
+    xmlWriter->writeStartElement("segments");
+    xmlWriter->writeAttribute("count", QString::number(_epsignal->profile()->numberOfSegmentsOfType(All)));
 
 	foreach (EPSegment *segment, _epsignal->profile()->segmentsOfType(All))
 		writeSegment(segment);
 
-	xmlWriter.writeEndElement();
+    xmlWriter->writeEndElement();
 }

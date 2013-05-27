@@ -49,7 +49,7 @@ inline Slope slopeWithLeftRightHeightAndDirection(int left, int right, float hei
 }
 
 // debug
-#define DebugReading 1
+#define DebugReading 0
 
 inline static int numberOfPointsInOneHour() { return 3600 / APSampleRate; }
 inline static float transformSecondsToNumberOfPoints(float seconds) { return seconds / APSampleRate; }

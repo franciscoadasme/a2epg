@@ -67,7 +67,7 @@ void MainWindow::about()
 	QMessageBox::about(this, "AutoEPG",
                        "<p><strong style=\"font-size: 18px; line-height: 1em;\">AutoEPG 0.9.1</strong><br>"
 					   "Automatic Processing of Electrical Penetration Graphs<br>"
-                       "<small style=\"color: #666;\">Build 96 ~ May 2013</small></p>"
+                       "<small style=\"color: #666;\">Build 97 ~ May 2013</small></p>"
 
 					   "<p>This application was developed by <a href=\"http://about.me/franciscoadasme\">Francisco Adasme</a>"
 					   " and <a href=\"http://about.me/camila.munoz\">Camila Mu&ntilde;oz</a>"
