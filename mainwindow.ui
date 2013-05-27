@@ -140,7 +140,7 @@
    </widget>
    <widget class="QMenu" name="menuSearch">
     <property name="title">
-     <string>Search</string>
+     <string>Analyze</string>
     </property>
     <addaction name="actionRun_all"/>
     <addaction name="actionRun_marked"/>
@@ -540,7 +540,7 @@ padding: 2px 4px;
      <normaloff>:/resources/run.png</normaloff>:/resources/run.png</iconset>
    </property>
    <property name="text">
-    <string>Run All</string>
+    <string>Run All Engines</string>
    </property>
   </action>
   <action name="actionRun_marked">

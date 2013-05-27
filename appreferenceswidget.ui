@@ -33,7 +33,7 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>1</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="tab">
       <attribute name="title">
@@ -55,7 +55,7 @@
           <item>
            <widget class="QCheckBox" name="openPanoramicCheckBox">
             <property name="text">
-             <string>Open panoramic widget when active signal changes</string>
+             <string>Open panoramic widget when selecting a signal</string>
             </property>
             <property name="tristate">
              <bool>false</bool>
@@ -65,7 +65,7 @@
           <item>
            <widget class="QCheckBox" name="openInfoCheckBox">
             <property name="text">
-             <string>Open info panel when changing signal</string>
+             <string>Open information panel when changing signal</string>
             </property>
            </widget>
           </item>
@@ -80,6 +80,9 @@
          <layout class="QVBoxLayout" name="verticalLayout_3">
           <item>
            <widget class="QCheckBox" name="liveSegmentResizingCheckBox">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
             <property name="text">
              <string>Live segment resizing</string>
             </property>
@@ -110,7 +113,7 @@
           <item>
            <widget class="QCheckBox" name="askWhenDeletingSegmentCheckBox">
             <property name="text">
-             <string>Ask when deleting a segment</string>
+             <string>Popup a confirmation dialog when deleting a segment</string>
             </property>
            </widget>
           </item>
