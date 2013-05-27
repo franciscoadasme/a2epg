@@ -192,10 +192,7 @@ bool EPSignalReader::readInfo()
             _epsignal->setName(_xmlReader->readElementText());
         else if (_xmlReader->name() == "comments")
             _epsignal->setComments(_xmlReader->readElementText());
-        else if (_xmlReader->name() == "datname") {
-            _epsignal->setDatname(_xmlReader->readElementText());
-			_datFilepath = _epsignal->fileInfo().path() + "/" + _epsignal->datname();
-        } else if (_xmlReader->name() == "length")
+        else if (_xmlReader->name() == "length")
             _epsignalLength = _xmlReader->readElementText().toInt();
         else
             _xmlReader->skipCurrentElement();

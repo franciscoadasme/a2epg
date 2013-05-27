@@ -27,11 +27,6 @@ QString EPSignal::comments()
 	return _comments;
 }
 
-QString EPSignal::datname()
-{
-	return _datname;
-}
-
 QFileInfo EPSignal::fileInfo()
 {
 	return _fileInfo;
@@ -126,11 +121,6 @@ void EPSignal::setChanged(bool changed)
 	_changed = changed;
 	emit signalDidChanged();
 	emit signalDidChanged(changed);
-}
-
-void EPSignal::setDatname(QString datname)
-{
-	_datname = datname;
 }
 
 void EPSignal::setFileInfo(QFileInfo fileInfo)

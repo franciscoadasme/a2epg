@@ -18,7 +18,6 @@ protected:
 	void run();
 
 private:
-    QString _datFilepath;
     QString errorMessage;
     EPSignal *_epsignal;
 	int _epsignalLength;

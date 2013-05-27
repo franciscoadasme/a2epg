@@ -67,7 +67,7 @@ void MainWindow::about()
 	QMessageBox::about(this, "AutoEPG",
                        "<p><strong style=\"font-size: 18px; line-height: 1em;\">AutoEPG 0.9.1</strong><br>"
 					   "Automatic Processing of Electrical Penetration Graphs<br>"
-                       "<small style=\"color: #666;\">Build 97 ~ May 2013</small></p>"
+                       "<small style=\"color: #666;\">Build 98 ~ May 2013</small></p>"
 
 					   "<p>This application was developed by <a href=\"http://about.me/franciscoadasme\">Francisco Adasme</a>"
 					   " and <a href=\"http://about.me/camila.munoz\">Camila Mu&ntilde;oz</a>"
@@ -300,7 +300,7 @@ void MainWindow::save()
 	EPSignal *signal = EPSignalsController::activeSignal();
 	QString ext = signal->fileInfo().suffix();
 	QString filePath = ext == "epg" ? signal->fileInfo().filePath()
-									: APUtils::runSaveDialog(EPSignalWriter::Epg | EPSignalWriter::Dat, "epg");
+                                    : APUtils::runSaveDialog(EPSignalWriter::Epg, "epg");
 	EPSignalWriter::dispatchWriter(filePath, signal,
 								   this, SLOT(writingDidEnd(bool,QObject*,QString)));
 }
@@ -340,7 +340,7 @@ void MainWindow::saveAll()
 	QString filePath = APUtils::runSaveDialog(EPSignalWriter::Epg);
 	EPSignalWriter::dispatchWriter(filePath, EPSignalsController::activeSignal(),
 								   this, SLOT(writingDidEnd(bool,QObject*,QString)),
-								   EPSignalWriter::Epg | EPSignalWriter::Dat);
+                                   EPSignalWriter::Epg);
 }
 
 void MainWindow::setUpConnections()
@@ -402,8 +402,7 @@ void MainWindow::setUpActionsAndMenus()
 	connect(ui->epsprofileWidget, SIGNAL(focusedSegmentDidChange(bool)),
 			ui->actionRemove_Segment, SLOT(setEnabled(bool)));
 
-	ui->actionSave->setEnabled(false);
-	ui->actionSaveAll->setEnabled(false);
+    ui->actionSave->setEnabled(false);
 	ui->actionSave_As->setEnabled(false);
 	ui->actionClose->setEnabled(false);
 
@@ -462,7 +461,6 @@ void MainWindow::updateMenuAndActionsForSignal(EPSignal *signal)
 
 	ui->actionClose->setEnabled(signal != NULL);
 	ui->actionSave->setEnabled(signal != NULL && signal->hasChanged());
-	ui->actionSaveAll->setEnabled(signal != NULL);
 	ui->actionSave_As->setEnabled(signal != NULL);
 
 	ui->actionRedo->setEnabled(signal != NULL && !signal->profile()->editHandler->hasReachedRedoLimit());

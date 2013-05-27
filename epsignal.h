@@ -27,8 +27,6 @@ public:
 	int id();
 	QString name();
 	void setName(QString name);
-	QString datname();
-	void setDatname(QString datname);
 	QString comments();
 	void setComments(QString aComment);
 	bool isCommented();
@@ -66,8 +64,7 @@ signals:
 
 private:
 	int _id;
-	QString _name;
-	QString _datname;
+    QString _name;
 	QString _comments;
 	QFileInfo _fileInfo;
 	bool _changed;

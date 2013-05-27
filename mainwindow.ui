@@ -105,7 +105,6 @@
     <addaction name="separator"/>
     <addaction name="actionSave"/>
     <addaction name="actionSave_As"/>
-    <addaction name="actionSaveAll"/>
     <addaction name="separator"/>
     <addaction name="actionQuit"/>
    </widget>
@@ -221,7 +220,16 @@ padding: 2px 4px;
      <string notr="true"/>
     </property>
     <layout class="QGridLayout" name="gridLayout">
-     <property name="margin">
+     <property name="leftMargin">
+      <number>4</number>
+     </property>
+     <property name="topMargin">
+      <number>4</number>
+     </property>
+     <property name="rightMargin">
+      <number>4</number>
+     </property>
+     <property name="bottomMargin">
       <number>4</number>
      </property>
      <item row="0" column="0" colspan="3">
@@ -631,17 +639,6 @@ padding: 2px 4px;
     <string>Ctrl+S</string>
    </property>
   </action>
-  <action name="actionSaveAll">
-   <property name="text">
-    <string>Save All</string>
-   </property>
-   <property name="toolTip">
-    <string>Save both .epg and .dat files</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+Shift+S</string>
-   </property>
-  </action>
   <action name="actionToggle_Mouse_Tracking">
    <property name="checkable">
     <bool>true</bool>
@@ -1049,22 +1046,6 @@ padding: 2px 4px;
    <signal>triggered()</signal>
    <receiver>MainWindow</receiver>
    <slot>save()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>327</x>
-     <y>255</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>actionSaveAll</sender>
-   <signal>triggered()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>saveAll()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>-1</x>
