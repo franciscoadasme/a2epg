@@ -75,11 +75,16 @@ void EPSignalWriter::writeCsv()
 	QTextStream stream(file);
 	QList<float> points = _epsignal->points();
 
+    stream << "Type,Start,End,Elapsed" << endl;
+
 	foreach (EPSegment *segment, _epsignal->profile()->segmentsOfType(All)) {
+        float start = transformNumberOfPointsToSeconds(segment->start());
+        float end = transformNumberOfPointsToSeconds(segment->end());
 		stream << segment->type()->name()
-			   << "," << transformNumberOfPointsToSeconds(segment->start())
-			   << "," << points[segment->start()]
-			   << "\n";
+               << "," << start
+               << "," << end
+               << "," << end - start
+               << endl;
 	}
 
 	file->close();
