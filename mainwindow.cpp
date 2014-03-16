@@ -260,7 +260,7 @@ void MainWindow::runAll()
 		return;
 	}
 
-	APSeekerWidget::dispatchSeekersForTypes(QList<SegmentType>() << Np << C << Pd << E1 << F << G,
+    APSeekerWidget::dispatchSeekersForTypes(QList<SegmentType>() << Np << C << Pd << E1 << G,
 											ui->actionFill_Gaps->isChecked());
 }
 

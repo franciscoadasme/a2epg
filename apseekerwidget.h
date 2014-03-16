@@ -54,6 +54,7 @@ private:
 	void stopAll();
 	void beforeClosing();
 	void showInfoMessage();
+    static QList<SegmentType> sortedTypes(QList<SegmentType> types);
 };
 
 #endif // APSEEKERWIDGET_H

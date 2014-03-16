@@ -16,7 +16,7 @@ APSeekerPickerDialog::APSeekerPickerDialog(QWidget *parent) :
 	checkBoxs.insert(Pd, ui->pdCheckBox);
 	checkBoxs.insert(Np, ui->npCheckBox);
 	checkBoxs.insert(G, ui->gCheckBox);
-	checkBoxs.insert(F, ui->fCheckBox);
+//	checkBoxs.insert(F, ui->fCheckBox);
 	checkBoxs.insert(E1, ui->e1CheckBox);
 //	checkBoxs.insert(E2, ui->e2CheckBox);
 	checkBoxs.insert(C, ui->cCheckBox);

@@ -84,7 +84,7 @@ void APSeekerWidget::dispatchSeekersForTypes(QList<SegmentType> types, bool shou
 	seekerWidget->fillGaps = shouldFillGaps;
 
 	int row = 0;
-	foreach (SegmentType type, types) {
+    foreach (SegmentType type, APSeekerWidget::sortedTypes(types)) {
 		APSeeker *seeker = APSeeker::seekerForTypeAndSignal(type, signal, seekerWidget);
 		connect(seeker, SIGNAL(workDidEnd(bool,QObject*,QString)),
 				seekerWidget, SLOT(seekerDidEnd(bool,QObject*,QString)));
@@ -225,6 +225,20 @@ void APSeekerWidget::showInfoMessage()
 	box.setInformativeText(message);
 	box.setTextFormat(Qt::RichText);
 	box.exec();
+}
+
+QList<SegmentType> APSeekerWidget::sortedTypes(QList<SegmentType> types)
+{
+    QList<SegmentType> defaultOrder;
+    defaultOrder << Pd << G << Np << E1 << C;
+
+    QList<SegmentType> sortedTypes;
+    foreach (SegmentType type, defaultOrder) {
+        if (types.contains(type)) {
+            sortedTypes << type;
+        }
+    }
+    return sortedTypes;
 }
 
 void APSeekerWidget::stopAll()
