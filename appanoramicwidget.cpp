@@ -154,7 +154,7 @@ void APPanoramicWidget::emitRangeText()
 	if (numberOfSections < 1) numberOfSections = 1;
 	int currentSection = _offset / numberOfPointsInOneHour + 1;
 
-	emit updateRangeText(tr("Showing from %1 to %2 (%3 of %4)")
+    emit updateRangeText(tr("Showing from %1 to %2 seconds (%3 of %4 hours)")
 						 .arg(_offset * APSampleRate)
 						 .arg(to * APSampleRate)
 						 .arg(currentSection)
