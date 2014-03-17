@@ -45,7 +45,7 @@ private:
 	QMap<SegmentType, QLabel *> _labels;
 
 	int _globalProgress;
-	int _numberOfSeekersThatDidFinish;
+    QList<SegmentType> _segmentTypesToSeekFor;
 	bool fillGaps;
 	static bool _running;
 

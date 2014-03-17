@@ -17,8 +17,7 @@ APSeekerWidget::APSeekerWidget(QWidget *parent) :
 {
 	ui->setupUi(this);
 
-	_globalProgress = 0;
-	_numberOfSeekersThatDidFinish = 0;
+    _globalProgress = 0;
 
 	_progressBars = QMap<SegmentType, APProgressBar *>();
 	_seekers = QMap<SegmentType, APSeeker *>();
@@ -53,8 +52,7 @@ void APSeekerWidget::beforeClosing()
 
 void APSeekerWidget::closeEvent(QCloseEvent *event)
 {
-	bool didAllSeekerFinish = _numberOfSeekersThatDidFinish == _seekers.values().length();
-	if (didAllSeekerFinish) {
+    if (_segmentTypesToSeekFor.isEmpty()) {
 		beforeClosing();
 		event->accept();
 	} else {
@@ -87,9 +85,10 @@ void APSeekerWidget::dispatchSeekersForTypes(QList<SegmentType> types, bool shou
 	EPSignal *signal = EPSignalsController::activeSignal();
 
 	seekerWidget->fillGaps = shouldFillGaps;
+    seekerWidget->_segmentTypesToSeekFor = APSeekerWidget::sortedTypes(types);
 
 	int row = 0;
-    foreach (SegmentType type, APSeekerWidget::sortedTypes(types)) {
+    foreach (SegmentType type, seekerWidget->_segmentTypesToSeekFor) {
 		APSeeker *seeker = APSeeker::seekerForTypeAndSignal(type, signal, seekerWidget);
 		connect(seeker, SIGNAL(workDidEnd(bool,QObject*,QString)),
 				seekerWidget, SLOT(seekerDidEnd(bool,QObject*,QString)));
@@ -144,18 +143,20 @@ void APSeekerWidget::dispatchSeekersForTypes(QList<SegmentType> types, bool shou
 
 APSeeker *APSeekerWidget::nextSeeker()
 {
-    SegmentType type = APSeekerWidget::defaultOrder().at(_numberOfSeekersThatDidFinish);
-    return _seekers.value(type, NULL);
+    if (!_segmentTypesToSeekFor.isEmpty()) {
+        SegmentType type = _segmentTypesToSeekFor.takeFirst();
+        return _seekers.value(type, NULL);
+    }
+    return NULL;
 }
 
 void APSeekerWidget::seekerDidEnd(bool, QObject *, QString msg)
 {
 	SegmentType type = ((APSeeker *)sender())->type();
-	_stopButtons.value(type)->setEnabled(false);
-	_numberOfSeekersThatDidFinish++;
+    _stopButtons.value(type)->setEnabled(false);
 	_labels.value(type)->setText(msg);
 
-    if (_numberOfSeekersThatDidFinish < _seekers.size()) {
+    if (!_segmentTypesToSeekFor.isEmpty()) {
         APSeeker *seeker = nextSeeker();
         seeker->start();
 		_stopButtons.value(seeker->type())->setEnabled(true);
