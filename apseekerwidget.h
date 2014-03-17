@@ -46,7 +46,9 @@ private:
 
 	int _globalProgress;
     QList<SegmentType> _segmentTypesToSeekFor;
+    APSeeker *_activeSeeker;
 	bool fillGaps;
+    bool _canceled;
 	static bool _running;
 
 	QTime t;

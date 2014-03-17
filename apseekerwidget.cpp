@@ -18,6 +18,8 @@ APSeekerWidget::APSeekerWidget(QWidget *parent) :
 	ui->setupUi(this);
 
     _globalProgress = 0;
+    _canceled = false;
+    _activeSeeker = NULL;
 
 	_progressBars = QMap<SegmentType, APProgressBar *>();
 	_seekers = QMap<SegmentType, APSeeker *>();
@@ -44,7 +46,7 @@ void APSeekerWidget::beforeClosing()
 
 	EPSignalsController::activeSignal()->profile()->forceEmitOfSegmentsDidChange();
 
-	APSeekerWidget::_running = false;
+    APSeekerWidget::_running = false;
 	ui->progressBar->setValue(ui->progressBar->maximum());
 
 	showInfoMessage();
@@ -52,8 +54,10 @@ void APSeekerWidget::beforeClosing()
 
 void APSeekerWidget::closeEvent(QCloseEvent *event)
 {
-    if (_segmentTypesToSeekFor.isEmpty()) {
-		beforeClosing();
+    if (_activeSeeker == NULL) {
+        if (!_canceled) {
+            beforeClosing();
+        }
 		event->accept();
 	} else {
 		int response = QMessageBox::warning(this, tr("Cancel seekers"),
@@ -63,6 +67,7 @@ void APSeekerWidget::closeEvent(QCloseEvent *event)
 											QMessageBox::Cancel);
 		if (response == QMessageBox::Ok) {
 			stopAll();
+            _canceled = true;
 			APSeekerWidget::_running = false;
 			event->accept();
 		} else {
@@ -157,11 +162,13 @@ void APSeekerWidget::seekerDidEnd(bool, QObject *, QString msg)
 	_labels.value(type)->setText(msg);
 
     if (!_segmentTypesToSeekFor.isEmpty()) {
-        APSeeker *seeker = nextSeeker();
-        seeker->start();
-		_stopButtons.value(seeker->type())->setEnabled(true);
-	} else
-		close();
+        _activeSeeker = nextSeeker();
+        _activeSeeker->start();
+        _stopButtons.value(_activeSeeker->type())->setEnabled(true);
+    } else {
+        _activeSeeker = NULL;
+        close();
+    }
 }
 
 void APSeekerWidget::seekerProgressDidChange(int progress)
@@ -178,9 +185,9 @@ void APSeekerWidget::seekerProgressDidChange(int progress)
 
 void APSeekerWidget::showEvent(QShowEvent *event)
 {
-    APSeeker *seeker = nextSeeker();
-	seeker->start();
-	_stopButtons.value(seeker->type())->setEnabled(true);
+    _activeSeeker = nextSeeker();
+    _activeSeeker->start();
+    _stopButtons.value(_activeSeeker->type())->setEnabled(true);
 
 	t.start();
 
@@ -256,6 +263,7 @@ void APSeekerWidget::stopAll()
 		if (seeker->isRunning())
 			seeker->stop();
 	}
+    _activeSeeker = NULL;
 }
 
 void APSeekerWidget::seekerDidThrowMessage(QString msg)
