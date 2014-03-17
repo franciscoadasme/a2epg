@@ -28,7 +28,7 @@ void APCSeeker::loadDefaults()
 	setParam("allowedDistance", transformSecondsToNumberOfPoints(10));
 
 //	setParam("needsCleanUp", false);
-	setParam("needsLog", true);
+    setParam("needsLog", false);
 }
 
 bool APCSeeker::isAllowedPoint()
@@ -44,7 +44,9 @@ bool APCSeeker::isAllowedPoint()
 //	float average = APUtils::getAverage(pointsInsideWindow);
 //	float deviation = APUtils::getDeviation(pointsInsideWindow, average);
 
-	writeLog(tr("%1\t%2\t%3\t%4").arg(middle()).arg(amplitude).arg(topDeviation).arg(bottomDeviation));
+
+//	writeLog(tr("%1\t%2\t%3\t%4").arg(middle()).arg(amplitude).arg(topDeviation).arg(bottomDeviation));
+
 
 	return qAbs(topDeviation - bottomDeviation) > .15
 			&& (topDeviation > .1 || bottomDeviation > .1)
