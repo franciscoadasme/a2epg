@@ -73,6 +73,11 @@ void APSeekerWidget::closeEvent(QCloseEvent *event)
 	}
 }
 
+QList<SegmentType> APSeekerWidget::defaultOrder()
+{
+    return QList<SegmentType>() << Pd << G << Np << E1 << C;
+}
+
 void APSeekerWidget::dispatchSeekersForTypes(QList<SegmentType> types, bool shouldFillGaps)
 {
 	if (types.isEmpty()) return;
@@ -91,7 +96,7 @@ void APSeekerWidget::dispatchSeekersForTypes(QList<SegmentType> types, bool shou
 		connect(seeker, SIGNAL(progressDidChange(int)),
 				seekerWidget, SLOT(seekerProgressDidChange(int)));
 		connect(seeker, SIGNAL(workThrowsMessage(QString)),
-				seekerWidget, SLOT(seekerDidThrowMessage(QString)));
+                seekerWidget, SLOT(seekerDidThrowMessage(QString)));
 		seekerWidget->_seekers.insert(type, seeker);
 
 		APProgressBar *progressBar = new APProgressBar();
@@ -137,6 +142,12 @@ void APSeekerWidget::dispatchSeekersForTypes(QList<SegmentType> types, bool shou
 	seekerWidget->show();
 }
 
+APSeeker *APSeekerWidget::nextSeeker()
+{
+    SegmentType type = APSeekerWidget::defaultOrder().at(_numberOfSeekersThatDidFinish);
+    return _seekers.value(type, NULL);
+}
+
 void APSeekerWidget::seekerDidEnd(bool, QObject *, QString msg)
 {
 	SegmentType type = ((APSeeker *)sender())->type();
@@ -144,9 +155,9 @@ void APSeekerWidget::seekerDidEnd(bool, QObject *, QString msg)
 	_numberOfSeekersThatDidFinish++;
 	_labels.value(type)->setText(msg);
 
-	if (_numberOfSeekersThatDidFinish < _seekers.size()) {
-		APSeeker *seeker = (APSeeker *)_seekers.values().at(_numberOfSeekersThatDidFinish);
-		seeker->start();
+    if (_numberOfSeekersThatDidFinish < _seekers.size()) {
+        APSeeker *seeker = nextSeeker();
+        seeker->start();
 		_stopButtons.value(seeker->type())->setEnabled(true);
 	} else
 		close();
@@ -166,7 +177,7 @@ void APSeekerWidget::seekerProgressDidChange(int progress)
 
 void APSeekerWidget::showEvent(QShowEvent *event)
 {
-	APSeeker *seeker = (APSeeker *)_seekers.values().at(_numberOfSeekersThatDidFinish);
+    APSeeker *seeker = nextSeeker();
 	seeker->start();
 	_stopButtons.value(seeker->type())->setEnabled(true);
 
@@ -229,11 +240,8 @@ void APSeekerWidget::showInfoMessage()
 
 QList<SegmentType> APSeekerWidget::sortedTypes(QList<SegmentType> types)
 {
-    QList<SegmentType> defaultOrder;
-    defaultOrder << Pd << G << Np << E1 << C;
-
     QList<SegmentType> sortedTypes;
-    foreach (SegmentType type, defaultOrder) {
+    foreach (SegmentType type, APSeekerWidget::defaultOrder()) {
         if (types.contains(type)) {
             sortedTypes << type;
         }
