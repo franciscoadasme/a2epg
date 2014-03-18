@@ -15,24 +15,25 @@ using namespace std;
 #include "aputils.h"
 #include "apstatuscontroller.h"
 
-EPSignalReader::EPSignalReader(EPSignal *eps, QObject *parent) :
+EPSignalReader::EPSignalReader(EPSignal *eps, bool loadRelatedFiles, QObject *parent) :
 	APWorker(eps, parent)
 {
 	_epsignalLength = APEmpty; // length not known
 	_epsignal = (EPSignal *)object();
+  _loadRelatedFiles = loadRelatedFiles;
 	totalProgress = 0;
 	moveToThread(this);
 }
 
-EPSignalReader *EPSignalReader::reader(QString filepath)
+EPSignalReader *EPSignalReader::reader(QString filepath, bool loadRelatedFiles)
 {
-	EPSignalReader *reader = new EPSignalReader(new EPSignal(filepath));
+  EPSignalReader *reader = new EPSignalReader(new EPSignal(filepath), loadRelatedFiles);
 	return reader;
 }
 
-void EPSignalReader::dispatchReader(QString filePath, QObject *target, const char *callback)
+void EPSignalReader::dispatchReader(QString filePath, QObject *target, const char *callback, bool loadRelatedFiles)
 {
-	EPSignalReader *reader = EPSignalReader::reader(filePath);
+  EPSignalReader *reader = EPSignalReader::reader(filePath, loadRelatedFiles);
 	connect(reader, SIGNAL(workDidEnd(bool, QObject*, QString)),
 			target, callback);
 	APStatusController::bindToWorker(reader);
@@ -55,6 +56,10 @@ void EPSignalReader::run()
 #if DebugReading
     qDebug() << filePaths;
 #endif
+
+    if (filePaths.size() > 1) {
+      _epsignal->setName(EPSignalReader::suggestedCollectionNameBasedOnFilePath(filePaths.first()));
+    }
 
     bool success = true;
     foreach (QString filePath, filePaths) {
@@ -265,29 +270,29 @@ bool EPSignalReader::readSegments()
 
 QStringList EPSignalReader::retrieveFilePaths()
 {
-    QString filePath = _epsignal->fileInfo().filePath();
-    QStringList filePaths;
+  QString filePath = _epsignal->fileInfo().filePath();
+  QStringList filePaths;
 
-    QString pattern;
-    switch (_epsignal->fileType()) {
-    case EPSignal::Dat:
-        pattern = tr("(?<=(\\.|0))\\d(?=\\.dat)");
-        break;
-    case EPSignal::Acquisition:
-        pattern = tr("(?<=D0)\\d");
-        break;
-    default:
-        filePaths << filePath;
-        return filePaths;
-    }
+  if (_loadRelatedFiles) {
+    QRegularExpression rx = regexForFilePath(filePath);
+    QString index = rx.match(filePath).captured();
+    bool isZeroPadded = index.startsWith('0') && index.length() > 1;
 
-    QRegularExpression rx(pattern);
     for (int i = 1; i < 10; i++) {
-        QString path = filePath.replace( rx, QString::number(i) );
-        if (QFileInfo(path).exists())
-            filePaths << path;
-        else break;
+      index = QString::number(i);
+      if (isZeroPadded) index.prepend("0");
+
+      QString path = filePath;
+      path.replace( rx, index );
+      if (QFileInfo(path).exists())
+        filePaths << path;
+      else break;
     }
+  }
+
+  if (!filePaths.contains(filePath)) {
+    filePaths << filePath;
+  }
 
 	return filePaths;
 }
@@ -298,4 +303,49 @@ void EPSignalReader::emitReadingError()
 					   tr("Can't read file %1:\n\n%2")
 					   .arg(_epsignal->fileInfo().fileName())
                        .arg(errorMessage));
+}
+
+bool EPSignalReader::isFilePathNumbered(QString filePath)
+{
+    QRegularExpression rx = EPSignalReader::regexForFilePath(filePath);
+    return rx.isValid() && rx.match(filePath).hasMatch();
+}
+
+QRegularExpression EPSignalReader::regexForFilePath(QString filePath)
+{
+  EPSignal *signal = new EPSignal(filePath);
+
+  QString pattern;
+  switch (signal->fileType()) {
+  case EPSignal::Dat:
+  //        pattern = tr("?<=(\\.|\\.0))\\d(?=\\.dat");
+    pattern = tr("(?<=([^\\d]))0?\\d(?=\\.dat)");
+    break;
+  case EPSignal::Acquisition:
+    pattern = tr("\\.(?<=D0)\\d");
+    break;
+  default:
+    pattern = tr("(("); // invalid regex
+    break;
+  }
+
+  QRegularExpression rx(pattern);
+  return rx;
+}
+
+QString EPSignalReader::suggestedCollectionNameBasedOnFilePath(QString filePath)
+{
+  QRegularExpression regexp = EPSignalReader::regexForFilePath(filePath);
+  QRegularExpressionMatch match = regexp.match(filePath);
+
+  QString path = filePath;
+  path.remove(regexp);
+
+  QStringList separators;
+  separators << tr("-") << tr("_") << tr(".");
+  if (separators.contains(path.at(match.capturedStart() - 1))) {
+    path.remove(match.capturedStart() - 1, 1);
+  }
+
+  return QFileInfo(path).baseName();
 }

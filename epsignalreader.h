@@ -9,30 +9,35 @@ class EPSignalReader : public APWorker
 {
     Q_OBJECT
 public:
-    explicit EPSignalReader(EPSignal *eps, QObject *parent = 0);
+  explicit EPSignalReader(EPSignal *eps, bool loadRelatedFiles = true, QObject *parent = 0);
 
-	static EPSignalReader *reader(QString filepath);
-	static void dispatchReader(QString filePath, QObject *target = 0, const char *callback = 0);
+  static EPSignalReader *reader(QString filepath, bool loadRelatedFiles = true);
+  static void dispatchReader(QString filePath, QObject *target, const char *callback, bool loadRelatedFiles = true);
+  static bool isFilePathNumbered(QString filePath);
 
 protected:
 	void run();
 
 private:
-    QString errorMessage;
-    EPSignal *_epsignal;
+  QString errorMessage;
+  EPSignal *_epsignal;
 	int _epsignalLength;
-    QXmlStreamReader *_xmlReader;
+  QXmlStreamReader *_xmlReader;
 	int totalProgress;
+  bool _loadRelatedFiles;
 
-    bool readFile(QString filePath);
-    bool readBinary(QString filePath);
-    bool readDat(QString filePath);
+  bool readFile(QString filePath);
+  bool readBinary(QString filePath);
+  bool readDat(QString filePath);
 	bool readEPG();
 	bool readInfo();
 	bool readSegment();
 	bool readSegments();
-    void emitReadingError();
-    QStringList retrieveFilePaths();
+  void emitReadingError();
+
+  static QRegularExpression regexForFilePath(QString filePath);
+  QStringList retrieveFilePaths();
+  static QString suggestedCollectionNameBasedOnFilePath(QString filePath);
 };
 
 #endif // EPSIGNALREADER_H

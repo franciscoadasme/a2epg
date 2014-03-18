@@ -207,11 +207,11 @@ void MainWindow::openFile()
 {
 	QSettings settings;
 
-    QStringList filters;
-    filters << tr("All files (*)")
-            << tr("Electrical penetration signal (*.epg)")
-            << tr("PROBE Acquisition Data (*.D01)")
-            << tr("ASCII (*.dat)");
+  QStringList filters;
+  filters << tr("All files (*)")
+          << tr("Electrical penetration signal (*.epg)")
+          << tr("PROBE Acquisition Data (*.D01)")
+          << tr("ASCII (*.dat)");
 
 	QString filePath = QFileDialog::getOpenFileName(this, tr("Open File"),
                                                     settings.value(LastLocationVisitedKey, QDir::homePath()).toString(),
@@ -219,7 +219,17 @@ void MainWindow::openFile()
 	if (filePath.isEmpty()) return;
 	settings.setValue(LastLocationVisitedKey, QFileInfo(filePath).path());
 
-	EPSignalReader::dispatchReader(filePath, this, SLOT(readingDidEnd(bool,QObject*,QString)));
+  bool loadRelatedFiles = true;
+  if (EPSignalReader::isFilePathNumbered(filePath)) {
+    int result = QMessageBox::warning(this, tr("AutoEPG ~ Opening a file"),
+                                      tr("You are opening a file that appears to be part of a larger recording.\n\n"
+                                         "Do you want to load existing files that belongs to the same recording as well?"),
+                                      QMessageBox::Yes | QMessageBox::No,
+                                      QMessageBox::Yes);
+    loadRelatedFiles = result == QMessageBox::Yes;
+  }
+
+  EPSignalReader::dispatchReader(filePath, this, SLOT(readingDidEnd(bool,QObject*,QString)), loadRelatedFiles);
 }
 
 void MainWindow::navWidgetVisibilityChanged(bool isVisible)
