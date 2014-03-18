@@ -208,9 +208,9 @@ void MainWindow::openFile()
 	QSettings settings;
 
   QStringList filters;
-  filters << tr("All files (*)")
-          << tr("Electrical penetration signal (*.epg)")
-          << tr("PROBE Acquisition Data (*.D01)")
+  filters << tr("All Supported files (*.epg *.D0* *.dat)")
+          << tr("Electrical Penetration Signal (*.epg)")
+          << tr("PROBE/Stylet+a Acquisition Data (*.D0*)")
           << tr("ASCII (*.dat)");
 
 	QString filePath = QFileDialog::getOpenFileName(this, tr("Open File"),
