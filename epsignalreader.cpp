@@ -322,7 +322,7 @@ QRegularExpression EPSignalReader::regexForFilePath(QString filePath)
     pattern = tr("(?<=([^\\d]))0?\\d(?=\\.dat)");
     break;
   case EPSignal::Acquisition:
-    pattern = tr("\\.(?<=D0)\\d");
+    pattern = tr("(?<=\\.D0)\\d");
     break;
   default:
     pattern = tr("(("); // invalid regex
