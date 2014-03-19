@@ -24,7 +24,7 @@ void APNewPdSeeker::loadDefaults()
 	setParam("minimumDuration", transformSecondsToNumberOfPoints(2));
 	setParam("maximumDuration", transformSecondsToNumberOfPoints(10));
 
-	setParam("needsLog", true);
+  setParam("needsLog", false);
 	setParam("needsCleanUp", false);
 }
 

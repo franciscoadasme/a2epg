@@ -27,7 +27,7 @@ void APE1Seeker::loadDefaults()
 	setParam("allowedDistance", transformSecondsToNumberOfPoints(3));
 	setParam("peakWindowSize", 40);//25
 
-	setParam("needsLog", true);
+  setParam("needsLog", false);
 }
 
 bool APE1Seeker::isAllowedPoint()

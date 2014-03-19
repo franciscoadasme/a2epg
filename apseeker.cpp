@@ -85,7 +85,7 @@ void APSeeker::loadDefaults()
 	setParam("allowedDistance", transformSecondsToNumberOfPoints(1.5));
 	setParam("peakWindowSize", 16);
 	setParam("needsLog", false);
-	setParam("needsCleanUp", true);
+  setParam("needsCleanUp", true);
 }
 
 float APSeeker::param(QString key)
@@ -213,7 +213,7 @@ void APSeeker::setUp()
 {
 	loadDefaults();
 
-	if (param("needsLog")) {
+  if (param("needsLog")) {
 		QFileInfo fileInfo = ((EPSignal *)object())->fileInfo();
 		QString filename = tr("%1-%2.log").arg(fileInfo.baseName())
 				.arg( APUtils::stringWithSegmentType(type()).toLower() );
