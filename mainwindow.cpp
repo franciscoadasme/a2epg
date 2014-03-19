@@ -325,21 +325,8 @@ void MainWindow::saveAs()
 								 "You haven't added any waveform segment to this signal,"
 								 " so there is nothing to be saved.");
 			return;
-		} else {
-			int countOfEmptySpaces = EPSignalsController::activeSignal()->profile()->countOfEmptySpaces();
-			if (countOfEmptySpaces > 0) {
-				QString msg = tr("<strong>There %1 %2 undefined region(s) in the current signal.</strong><br><br>"
-								 "Be aware that these regions will be automatically assigned to the nearest segment"
-								 " from its left.<br><br>"
-								 "Are you sure you want to continue?")
-						.arg(countOfEmptySpaces > 1 ? "are" : "is")
-						.arg(countOfEmptySpaces);
-
-				if (QMessageBox::warning(this, "AutoEPG", msg, QMessageBox::Yes | QMessageBox::No) == QMessageBox::No)
-					return;
-			}
-		}
-	}
+    }
+  }
 
 	EPSignalWriter::dispatchWriter(filePath, EPSignalsController::activeSignal(),
 								   this, SLOT(writingDidEnd(bool,QObject*,QString)));

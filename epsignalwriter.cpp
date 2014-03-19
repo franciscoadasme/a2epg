@@ -69,25 +69,26 @@ void EPSignalWriter::run()
 
 void EPSignalWriter::writeCsv()
 {
-	QFile *file = createFile(_fileInfo.filePath());
-	if (!file) return;
+  QFile *file = createFile(_fileInfo.filePath());
+  if (!file) return;
 
-	QTextStream stream(file);
-	QList<float> points = _epsignal->points();
+  QTextStream stream(file);
+  stream.setRealNumberNotation(QTextStream::FixedNotation);
+  stream.setRealNumberPrecision(2);
 
-    stream << "Type,Start,End,Elapsed" << endl;
+  stream << "Type,Start,End,Elapsed" << endl;
+  foreach (EPSegment *segment, _epsignal->profile()->segmentsOfType(All)) {
+    float start = transformNumberOfPointsToSeconds(segment->start());
+    float end = transformNumberOfPointsToSeconds(segment->end());
 
-	foreach (EPSegment *segment, _epsignal->profile()->segmentsOfType(All)) {
-        float start = transformNumberOfPointsToSeconds(segment->start());
-        float end = transformNumberOfPointsToSeconds(segment->end());
-		stream << segment->type()->name()
-               << "," << start
-               << "," << end
-               << "," << end - start
-               << endl;
-	}
+    stream << segment->type()->name()
+           << "," << start
+           << "," << end
+           << "," << end - start
+           << endl;
+  }
 
-	file->close();
+  file->close();
 }
 
 void EPSignalWriter::writeDat()
