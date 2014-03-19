@@ -29,6 +29,7 @@ public:
 	void setName(QString name);
 	QString comments();
 	void setComments(QString aComment);
+  void appendComment(QString aComment);
 	bool isCommented();
 	QFileInfo fileInfo();
 	void setFileInfo(QFileInfo fileInfo);

@@ -42,38 +42,38 @@ void EPSignalReader::dispatchReader(QString filePath, QObject *target, const cha
 
 void EPSignalReader::run()
 {
-    QFileInfo fileInfo = _epsignal->fileInfo();
-    emit workDidBegin("Reading " + fileInfo.fileName());
+  QFileInfo fileInfo = _epsignal->fileInfo();
+  emit workDidBegin("Reading " + fileInfo.fileName());
 
-    if (_epsignal->fileType() == EPSignal::Unknown) {
-        errorMessage = "Unknown file type";
-        emitReadingError();
-        return;
-    }
+  if (_epsignal->fileType() == EPSignal::Unknown) {
+    errorMessage = "Unknown file type";
+    emitReadingError();
+    return;
+  }
 
-    QStringList filePaths = retrieveFilePaths();
-    emit workLengthDidChange(_epsignalLength * filePaths.count());
+  QStringList filePaths = retrieveFilePaths();
+  emit workLengthDidChange(_epsignalLength * filePaths.count());
 #if DebugReading
-    qDebug() << filePaths;
+  qDebug() << filePaths;
 #endif
 
+  bool success = true;
+  foreach (QString filePath, filePaths) {
+    success = readFile(filePath);
+    if (!success) break;
+  }
+
+  if (success) {
     if (filePaths.size() > 1) {
       _epsignal->setName(EPSignalReader::suggestedCollectionNameBasedOnFilePath(filePaths.first()));
+      _epsignal->appendComment(successCommentForFilePaths(filePaths));
     }
-
-    bool success = true;
-    foreach (QString filePath, filePaths) {
-        success = readFile(filePath);
-        if (!success) break;
-    }
-
-    if (success) {
-        _epsignal->setChanged(false);
-        emit workDidEnd();
-        emit workDidEnd(success, _epsignal, fileInfo.fileName() + " read.");
-    } else {
-        emitReadingError();
-    }
+    _epsignal->setChanged(false);
+    emit workDidEnd();
+    emit workDidEnd(success, _epsignal, successMessageForFilePaths(filePaths));
+  } else {
+    emitReadingError();
+  }
 }
 
 bool EPSignalReader::readBinary(QString filePath)
@@ -347,4 +347,32 @@ QString EPSignalReader::suggestedCollectionNameBasedOnFilePath(QString filePath)
   }
 
   return QFileInfo(path).baseName();
+}
+
+QString EPSignalReader::successMessageForFilePaths(QStringList filePaths)
+{
+  QStringList fileNames;
+  foreach (QString filePath, filePaths) {
+    fileNames << QFileInfo(filePath).fileName();
+  }
+  QString lastFileName = fileNames.takeLast();
+
+  QString message;
+  if (fileNames.isEmpty()) {
+    message = lastFileName + tr(" was");
+  } else {
+    message = fileNames.join(", ") + tr(" and ") + lastFileName + tr(" were");
+  }
+
+  return message + " read.";
+}
+
+QString EPSignalReader::successCommentForFilePaths(QStringList filePaths)
+{
+  QStringList fileNames;
+  foreach (QString filePath, filePaths) {
+    fileNames << QFileInfo(filePath).fileName();
+  }
+
+  return tr("Files loaded:\n") + fileNames.join("\n");
 }

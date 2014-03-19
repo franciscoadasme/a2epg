@@ -116,6 +116,14 @@ void EPSignal::setComments(QString aComment)
 	emit commentsDidchange(comments());
 }
 
+void EPSignal::appendComment(QString aComment)
+{
+  if (!_comments.isEmpty())
+    _comments += tr("\n");
+  _comments += aComment;
+  emit commentsDidchange(comments());
+}
+
 void EPSignal::setChanged(bool changed)
 {
 	_changed = changed;

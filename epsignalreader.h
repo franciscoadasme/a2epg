@@ -38,6 +38,8 @@ private:
   static QRegularExpression regexForFilePath(QString filePath);
   QStringList retrieveFilePaths();
   static QString suggestedCollectionNameBasedOnFilePath(QString filePath);
+  QString successMessageForFilePaths(QStringList filePaths);
+  QString successCommentForFilePaths(QStringList filePaths);
 };
 
 #endif // EPSIGNALREADER_H
