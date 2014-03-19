@@ -272,7 +272,7 @@ QString APUtils::runSaveDialog(int extensionFlags, QString defaultExtension)
 	QSettings settings;
 	QString selectedFilter = filters.first();
 	QString selectedDir = settings.value(LastLocationVisitedKey, QDir::homePath()).toString();
-	QString proposedName = EPSignalsController::activeSignal()->fileInfo().baseName().replace(" ", "_");
+  QString proposedName = EPSignalsController::activeSignal()->name();
 	if (!defaultExtension.isEmpty())
 		proposedName.append("." + defaultExtension);
 
