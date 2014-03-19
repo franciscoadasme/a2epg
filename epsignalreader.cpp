@@ -286,7 +286,6 @@ QStringList EPSignalReader::retrieveFilePaths()
       path.replace( rx, index );
       if (QFileInfo(path).exists())
         filePaths << path;
-      else break;
     }
   }
 
