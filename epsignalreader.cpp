@@ -81,8 +81,13 @@ bool EPSignalReader::readBinary(QString filePath)
     ifstream file(qPrintable(filePath), ios::binary);
 
     if (file) {
-        string junk;
-        for (int i = 0; i < 3; i++) getline(file, junk);
+        QString comments;
+        string comment;
+        for (int i = 0; i < 3; i++) {
+          getline(file, comment);
+          comments += comment.c_str();
+        }
+        _epsignal->setComments(comments);
 
         while(not file.eof()) {
             char *bfr = new char[4];
