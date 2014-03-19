@@ -6,7 +6,7 @@
 
 QT       += core gui widgets
 
-TARGET = autopeps
+TARGET = autoepg
 TEMPLATE = app
 
 #QMAKE_MAC_SDK = /Developer/SDKs/MacOSX10.6.sdk
