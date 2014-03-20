@@ -61,12 +61,12 @@ void EPSignalReader::run()
   foreach (QString filePath, filePaths) {
     success = readFile(filePath);
     if (!success) break;
+    _epsignal->appendFilePath(filePath);
   }
 
   if (success) {
     if (filePaths.size() > 1) {
       _epsignal->setName(EPSignalReader::suggestedCollectionNameBasedOnFilePath(filePaths.first()));
-      _epsignal->appendComment(successCommentForFilePaths(filePaths));
     }
     _epsignal->setChanged(false);
     emit workDidEnd();
@@ -370,14 +370,4 @@ QString EPSignalReader::successMessageForFilePaths(QStringList filePaths)
   }
 
   return message + " read.";
-}
-
-QString EPSignalReader::successCommentForFilePaths(QStringList filePaths)
-{
-  QStringList fileNames;
-  foreach (QString filePath, filePaths) {
-    fileNames << QFileInfo(filePath).fileName();
-  }
-
-  return tr("Files loaded:\n") + fileNames.join("\n");
 }

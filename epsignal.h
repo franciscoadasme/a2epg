@@ -32,7 +32,9 @@ public:
   void appendComment(QString aComment);
 	bool isCommented();
 	QFileInfo fileInfo();
-	void setFileInfo(QFileInfo fileInfo);
+  QList<QFileInfo> fileInfos();
+  void setFileInfo(QFileInfo fileInfo);
+  void appendFilePath(QString filePath);
 	QList<float> points();
 	uint length();
 	uint numberOfPoints();
@@ -67,7 +69,7 @@ private:
 	int _id;
     QString _name;
 	QString _comments;
-	QFileInfo _fileInfo;
+  QList<QFileInfo> _fileInfos;
 	bool _changed;
     FileType _fileType;
 

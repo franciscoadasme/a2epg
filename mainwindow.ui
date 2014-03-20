@@ -90,7 +90,7 @@
      <x>0</x>
      <y>0</y>
      <width>656</width>
-     <height>22</height>
+     <height>21</height>
     </rect>
    </property>
    <property name="defaultUp">
@@ -338,7 +338,7 @@ padding: 2px 4px;
          <item>
           <widget class="QLabel" name="label_2">
            <property name="text">
-            <string>Located at</string>
+            <string>Files loaded</string>
            </property>
           </widget>
          </item>

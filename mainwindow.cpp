@@ -492,10 +492,14 @@ void MainWindow::updateInfoComponentsForSignal(EPSignal *signal)
 	else
 		ui->segmentsTab->connect(signal, SIGNAL(signalDidChanged(bool)), SLOT(setEnabled(bool)));
 
-	ui->lengthLabel->setText( signal ? APUtils::formattedTime(signal->length(), "%hh %mm %ss") : "h m s" );
-	ui->pathLabel->setText(signal ? signal->fileInfo().filePath() : "path/to/file");
+  ui->lengthLabel->setText( signal ? APUtils::formattedTime(signal->length(), "%hh %mm %ss") : "h m s" );
 	ui->nameLineEdit->setText(signal ? signal->name() : "");
 	ui->commentsTextEdit->setPlainText(signal ? signal->comments() : "");
+
+  QStringList fileNames;
+  foreach (QFileInfo fileInfo, signal->fileInfos())
+    fileNames << fileInfo.fileName();
+  ui->pathLabel->setText(signal ? fileNames.join("\n") : "path/to/file");
 
 	ui->navWidget->adjustSize();
 }

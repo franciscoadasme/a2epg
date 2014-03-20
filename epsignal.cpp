@@ -6,8 +6,9 @@ EPSignal::EPSignal(QString filepath, int id, QObject *parent) :
 	QObject(parent),
 	_id(id)
 {
-	_fileInfo = QFileInfo(filepath);
-    _fileType = deriveFileType(_fileInfo);
+  QFileInfo fileInfo(filepath);
+  _fileInfos << fileInfo;
+  _fileType = deriveFileType(fileInfo);
 	_profile = new EPSProfile(this);
 	_changed = false;
 
@@ -29,7 +30,12 @@ QString EPSignal::comments()
 
 QFileInfo EPSignal::fileInfo()
 {
-	return _fileInfo;
+  return _fileInfos.first();
+}
+
+QList<QFileInfo> EPSignal::fileInfos()
+{
+  return _fileInfos;
 }
 
 EPSignal::FileType EPSignal::fileType()
@@ -75,7 +81,7 @@ float EPSignal::minimum()
 QString EPSignal::name()
 {
     if (_name == NULL) {
-        _name = _fileInfo.baseName();
+        _name = _fileInfos.first().baseName();
     }
 	return _name;
 }
@@ -133,8 +139,18 @@ void EPSignal::setChanged(bool changed)
 
 void EPSignal::setFileInfo(QFileInfo fileInfo)
 {
-	_fileInfo = fileInfo;
-	emit fileInfoDidChange();
+  _fileInfos.clear();
+  _fileInfos << fileInfo;
+  emit fileInfoDidChange();
+}
+
+void EPSignal::appendFilePath(QString filePath)
+{
+  QFileInfo fileInfo(filePath);
+  if (!fileInfos().contains(fileInfo)) {
+    _fileInfos << fileInfo;
+    emit fileInfoDidChange();
+  }
 }
 
 void EPSignal::setMaximum(float maximum)
