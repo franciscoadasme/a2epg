@@ -16,6 +16,7 @@
 #include "apstatuscontroller.h"
 #include "apsegmenttypescontroller.h"
 #include "apseekerpickerdialog.h"
+#include "apversion.h"
 
 MainWindow *MainWindow::_instance = NULL;
 
@@ -64,20 +65,20 @@ MainWindow *MainWindow::instance()
 
 void MainWindow::about()
 {
-	QMessageBox::about(this, "AutoEPG",
-                       "<p><strong style=\"font-size: 18px; line-height: 1em;\">AutoEPG 0.9.1</strong><br>"
-					   "Automatic Processing of Electrical Penetration Graphs<br>"
-                       "<small style=\"color: #666;\">Build 99 ~ Mar 2014</small></p>"
+  QString message = tr("<p><strong style=\"font-size: 18px; line-height: 1em;\">AutoEPG %1</strong><br>"
+                       "Automatic Processing of Electrical Penetration Graphs<br>"
+                       "<small style=\"color: #666;\">Build %2 ~ Mar 2014</small></p>"
 
-					   "<p>This application was developed by <a href=\"http://about.me/franciscoadasme\">Francisco Adasme</a>"
-					   " and <a href=\"http://about.me/camila.munoz\">Camila Mu&ntilde;oz</a>"
-					   " from Centre for Bioinformatics and Molecular Simulations"
-					   " (<a href=\"http://cbsm.utalca.cl\"><abrr>CBSM</abbr></a>) in association with"
-					   " <strong>Claudio C. Ramirez</strong> from Instituto de Biolog&iacute;a Vegetal y Biotecnolog&iacute;a"
-					   " (<a href=\"http://biologia.utalca.cl\"><abrr>IBVB</abbr></a>), Universidad de Talca, Chile.</p>"
+                       "<p>This application was developed by <a href=\"http://about.me/franciscoadasme\">Francisco Adasme</a>"
+                       " and <a href=\"http://about.me/camila.munoz\">Camila Mu&ntilde;oz</a>"
+                       " from Centre for Bioinformatics and Molecular Simulations"
+                       " (<a href=\"http://cbsm.utalca.cl\"><abrr>CBSM</abbr></a>) in association with"
+                       " <strong>Claudio C. Ramirez</strong> from Instituto de Biolog&iacute;a Vegetal y Biotecnolog&iacute;a"
+                       " (<a href=\"http://biologia.utalca.cl\"><abrr>IBVB</abbr></a>), Universidad de Talca, Chile.</p>"
 
-					   "<small>This copy can be distributed freely for research and/or academic purposes."
-					   " Any kind of commercial use is not intented by developers.</small>");
+                       "<small>This copy can be distributed freely for research and/or academic purposes."
+                       " Any kind of commercial use is not intented by the developers.</small>").arg(AP_VERSION).arg(AP_BUILD);
+  QMessageBox::about(this, "AutoEPG", message);
 }
 
 void MainWindow::aboutQt()

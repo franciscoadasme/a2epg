@@ -81,7 +81,8 @@ HEADERS  += mainwindow.h \
     ape1seeker.h \
 	apnewpdseeker.h \
     apseekerpickerdialog.h \
-    apedithandler.h
+    apedithandler.h \
+    apversion.h
 
 FORMS    += mainwindow.ui \
     apzoomwidget.ui \
