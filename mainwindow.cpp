@@ -497,10 +497,15 @@ void MainWindow::updateInfoComponentsForSignal(EPSignal *signal)
 	ui->nameLineEdit->setText(signal ? signal->name() : "");
 	ui->commentsTextEdit->setPlainText(signal ? signal->comments() : "");
 
-  QStringList fileNames;
-  foreach (QFileInfo fileInfo, signal->fileInfos())
-    fileNames << fileInfo.fileName();
-  ui->pathLabel->setText(signal ? fileNames.join("\n") : "path/to/file");
+  if (signal != NULL) {
+    QStringList fileNames;
+    foreach (QFileInfo fileInfo, signal->fileInfos())
+      fileNames << fileInfo.fileName();
+    ui->pathLabel->setText(fileNames.join("\n"));
+  } else {
+    ui->pathLabel->setText("path/to/file");
+  }
+
 
 	ui->navWidget->adjustSize();
 }
