@@ -113,9 +113,10 @@ bool EPSignalReader::readDat(QString filePath)
 	emit workDidBegin(tr("Reading %1").arg(QFileInfo(filePath).fileName()));
 
 	QTextStream stream(&file);
-    while (!stream.atEnd()) {
-		float value = stream.readLine().toFloat();
-		_epsignal->pushPoint(value);
+  while (!stream.atEnd()) {
+    QString line = stream.readLine();
+    float value = line.toFloat();
+    _epsignal->pushPoint(value);
 
 		if (_epsignalLength != APEmpty && ++totalProgress % 500 == 0) // report each 500 lines
 			emit progressDidChange(totalProgress);
@@ -278,7 +279,7 @@ QStringList EPSignalReader::retrieveFilePaths()
   QString filePath = _epsignal->fileInfo().filePath();
   QStringList filePaths;
 
-  if (_loadRelatedFiles) {
+  if (_loadRelatedFiles && EPSignalReader::isFilePathNumbered(filePath)) {
     QRegularExpression rx = regexForFilePath(filePath);
     QString index = rx.match(filePath).captured();
     bool isZeroPadded = index.startsWith('0') && index.length() > 1;
@@ -289,7 +290,7 @@ QStringList EPSignalReader::retrieveFilePaths()
 
       QString path = filePath;
       path.replace( rx, index );
-      if (QFileInfo(path).exists())
+      if (!filePaths.contains(path) && QFileInfo(path).exists())
         filePaths << path;
     }
   }
