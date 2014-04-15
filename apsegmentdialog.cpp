@@ -18,6 +18,15 @@ APSegmentDialog::APSegmentDialog(QWidget *parent) :
 	ui->startSpinBox->setMinimum(0);
 	ui->endSpinBox->setMinimum(0);
 	ui->endSpinBox->setMaximum(APInfinite);
+
+
+  this->setGeometry(
+    QStyle::alignedRect(
+      Qt::LeftToRight,
+      Qt::AlignCenter,
+      this->size(),
+      qApp->desktop()->availableGeometry()
+  ));
 }
 
 APSegmentDialog::~APSegmentDialog()
