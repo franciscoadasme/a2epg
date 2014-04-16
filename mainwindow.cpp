@@ -132,6 +132,10 @@ void MainWindow::closeEvent(QCloseEvent *event)
 		}
 	}
 
+  QSettings settings;
+  settings.setValue(ZoomHorizontalKey, APViewportHandler::shared()->horizontalZoom());
+  settings.setValue(ZoomVerticalKey, APViewportHandler::shared()->verticalZoom());
+
 	event->accept();
 }
 

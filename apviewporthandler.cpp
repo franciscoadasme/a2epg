@@ -13,9 +13,10 @@ APViewportHandler *APViewportHandler::_instance = NULL;
 APViewportHandler::APViewportHandler(QObject *parent) :
     QObject(parent)
 {
-	_zoomValues[Qt::Horizontal] = 1;
-	_zoomValues[Qt::Vertical] = 1;
-	_offset = 0;
+  QSettings settings;
+  _zoomValues[Qt::Horizontal] = settings.value(ZoomHorizontalKey, 1).toFloat();
+  _zoomValues[Qt::Vertical] = settings.value(ZoomVerticalKey, 1).toFloat();
+  _offset = 0;
 }
 
 APViewportHandler *APViewportHandler::shared()
@@ -28,7 +29,7 @@ APViewportHandler *APViewportHandler::shared()
 
 void APViewportHandler::changeZoom(Qt::Orientation orientation, float step)
 {
-	_zoomValues[orientation] += step;
+  _zoomValues[orientation] += step;
 	emit zoomDidChange();
 
 	if (_zoomValues[orientation] < BottomLimit) {
