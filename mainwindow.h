@@ -71,6 +71,8 @@ private:
 
 	void updateInfoComponentsForSignal(EPSignal *signal);
 	void updateMenuAndActionsForSignal(EPSignal *signal);
+
+  void runSearchEngines(QList<SegmentType> typesToRun, bool shouldFillGaps);
 };
 
 #endif // MAINWINDOW_H

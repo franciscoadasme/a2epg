@@ -270,25 +270,14 @@ void MainWindow::removeFocusedSegmentAction()
 
 void MainWindow::runAll()
 {
-	if (APSeekerWidget::isRunning()) {
-		QMessageBox::warning(this, "AutoEPG", "There are seekers running already.");
-		return;
-	}
-
-    APSeekerWidget::dispatchSeekersForTypes(QList<SegmentType>() << Np << C << Pd << E1 << G,
-											ui->actionFill_Gaps->isChecked());
+  runSearchEngines(QList<SegmentType>() << Np << C << Pd << E1 << G,
+                   ui->actionFill_Gaps->isChecked());
 }
 
 void MainWindow::runChecked()
 {
-	if (APSeekerWidget::isRunning()) {
-		QMessageBox::warning(this, "AutoEPG", "There are seekers running already.");
-		return;
-	}
-
 	APSeekerPickerDialog *picker = new APSeekerPickerDialog(this);
 	if (picker->exec() == QDialog::Accepted) {
-
 		QList<SegmentType> typesToRun = picker->selectedTypes();
 
 		if (typesToRun.contains(C) && (!typesToRun.contains(Pd) || !typesToRun.contains(G))) {
@@ -304,11 +293,36 @@ void MainWindow::runChecked()
 			}
 		}
 
-		APSeekerWidget::dispatchSeekersForTypes(typesToRun, false);
+    runSearchEngines(typesToRun, false);
 	}
 }
 
+void MainWindow::runSearchEngines(QList<SegmentType> typesToRun, bool shouldFillGaps)
+{
+  if (APSeekerWidget::isRunning()) {
+    QMessageBox::warning(this, "AutoEPG", "There are seekers running already.");
+    return;
+  }
 
+  if (!EPSignalsController::activeSignal()->profile()->isEmpty()) {
+    QStringList typeNamesToRun;
+    foreach (SegmentType type, typesToRun) {
+      typeNamesToRun << APUtils::stringWithSegmentType(type);
+    }
+
+    QString message = tr("Existing segments of type %1 will be overriden after running search engines."
+                         "\n\n"
+                         "Are you sure you want to continue?").arg(typeNamesToRun.join(", "));
+    int result = QMessageBox::warning(this, "AutoEPG",
+                                      message,
+                                      QMessageBox::Yes | QMessageBox::No,
+                                      QMessageBox::No);
+    if (result == QMessageBox::No)
+      return;
+  }
+
+  APSeekerWidget::dispatchSeekersForTypes(typesToRun, shouldFillGaps);
+}
 
 void MainWindow::save()
 {
