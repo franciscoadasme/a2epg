@@ -1,7 +1,8 @@
 #ifndef APVERSION_H
 #define APVERSION_H
 
-#define AP_VERSION "0.9.6"
-#define AP_BUILD 100
+#define AP_VERSION "0.9.7"
+#define AP_BUILD 108
+#define AP_BUILD_DATE "Apr 2014"
 
 #endif // APVERSION_H

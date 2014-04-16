@@ -67,7 +67,7 @@ void MainWindow::about()
 {
   QString message = tr("<p><strong style=\"font-size: 18px; line-height: 1em;\">AutoEPG %1</strong><br>"
                        "Automatic Processing of Electrical Penetration Graphs<br>"
-                       "<small style=\"color: #666;\">Build %2 ~ Mar 2014</small></p>"
+                       "<small style=\"color: #666;\">Build %2 ~ %3</small></p>"
 
                        "<p>This application was developed by <a href=\"http://about.me/franciscoadasme\">Francisco Adasme</a>"
                        " and <a href=\"http://about.me/camila.munoz\">Camila Mu&ntilde;oz</a>"
@@ -77,7 +77,7 @@ void MainWindow::about()
                        " (<a href=\"http://biologia.utalca.cl\"><abrr>IBVB</abbr></a>), Universidad de Talca, Chile.</p>"
 
                        "<small>This copy can be distributed freely for research and/or academic purposes."
-                       " Any kind of commercial use is not intented by the developers.</small>").arg(AP_VERSION).arg(AP_BUILD);
+                       " Any kind of commercial use is not intented by the developers.</small>").arg(AP_VERSION).arg(AP_BUILD).arg(AP_BUILD_DATE);
   QMessageBox::about(this, "AutoEPG", message);
 }
 
