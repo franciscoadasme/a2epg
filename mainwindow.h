@@ -48,6 +48,7 @@ public slots:
 	void writingDidEnd(bool success, QObject *, QString msg);
 
 	void removeFocusedSegmentAction();
+  void scrollToSegment(EPSegment *);
 
 protected:
 	explicit MainWindow(QWidget *parent = 0);
@@ -57,7 +58,7 @@ protected:
 
 private slots:
 	void on_commentsTextEdit_textChanged();
-	void on_nameLineEdit_textChanged(const QString &arg1);
+  void on_nameLineEdit_textChanged(const QString &arg1);
 
 private:
 	Ui::MainWindow *ui;

@@ -563,6 +563,8 @@ void MainWindow::updateUIComponentsForSignal(EPSignal *signal)
 				ui->epsprofileWidget, SLOT(setFocusedSegment(EPSegment*)));
 		connect(ui->epsprofileWidget, SIGNAL(focusedSegmentDidChange(EPSegment*)),
 				signal->profile(), SLOT(setSelectedSegment(EPSegment*)));
+    connect(signal->profile(), SIGNAL(selectedSegmentDidChange(EPSegment*)),
+            this, SLOT(scrollToSegment(EPSegment*)));
 		connect(signal->profile(), SIGNAL(segmentsDidChange()),
 				this, SLOT(updateSegmentLabel()));
 	} else {
@@ -591,4 +593,14 @@ void MainWindow::on_nameLineEdit_textChanged(const QString &arg1)
 {
 	if (EPSignalsController::hasActiveSignal())
 		EPSignalsController::activeSignal()->setName(arg1);
+}
+
+void MainWindow::scrollToSegment(EPSegment *segment)
+{
+  EPSProfile *profile = EPSignalsController::activeSignal()->profile();
+  int index = profile->indexOfObject(segment);
+  if (index >= 0) {
+    QModelIndex modelIndex = ui->segmentsTableView->model()->index(index, 0, QModelIndex());
+    ui->segmentsTableView->scrollTo(modelIndex);
+  }
 }
