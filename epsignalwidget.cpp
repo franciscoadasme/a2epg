@@ -154,7 +154,8 @@ void EPSignalWidget::mouseReleaseEvent(QMouseEvent *event)
 		if (temporalSegment) {
 //			temporalSegment->setEnd(hotspot);
 
-			if (APSegmentDialog::instance()->runForSegment(temporalSegment) == QDialog::Accepted) {
+      if (temporalSegment->type()->id() != APNotFound
+          || APSegmentDialog::instance()->runForSegment(temporalSegment) == QDialog::Accepted) {
 				EPSignalsController::activeSignal()->profile()->addSegment(temporalSegment);
 				MainWindow::instance()->epsprofileWidget()->setFocusedSegment(temporalSegment);
 			} else {
