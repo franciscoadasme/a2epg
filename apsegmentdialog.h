@@ -25,6 +25,7 @@ public slots:
 
 protected:
 	void closeEvent(QCloseEvent *);
+  void showEvent(QShowEvent *);
 
 private:
     Ui::APSegmentDialog *ui;

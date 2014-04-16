@@ -18,15 +18,6 @@ APSegmentDialog::APSegmentDialog(QWidget *parent) :
 	ui->startSpinBox->setMinimum(0);
 	ui->endSpinBox->setMinimum(0);
 	ui->endSpinBox->setMaximum(APInfinite);
-
-
-  this->setGeometry(
-    QStyle::alignedRect(
-      Qt::LeftToRight,
-      Qt::AlignCenter,
-      this->size(),
-      qApp->desktop()->availableGeometry()
-  ));
 }
 
 APSegmentDialog::~APSegmentDialog()
@@ -139,6 +130,17 @@ int APSegmentDialog::runForSegment(EPSegment *segment)
 	instance()->ui->typeComboBox->setCurrentIndex(APSegmentTypesController::indexOfType(segment->type()));
 
 	return instance()->exec();
+}
+
+void APSegmentDialog::showEvent(QShowEvent *)
+{
+  this->setGeometry(
+    QStyle::alignedRect(
+      Qt::LeftToRight,
+      Qt::AlignCenter,
+      this->size(),
+      qApp->desktop()->availableGeometry()
+  ));
 }
 
 void APSegmentDialog::valueDidChanged(QString)
