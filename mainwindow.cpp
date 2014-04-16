@@ -489,13 +489,13 @@ void MainWindow::updateInfoComponentsForSignal(EPSignal *signal)
 	if (settings.value(OpenInfoOnSignalChangeKey, false).toBool())
 		ui->navWidget->show();
 
-	ui->infoTab->setEnabled(signal != NULL);
+  ui->infoTab->setEnabled(signal != NULL);
 	ui->segmentsTab->setEnabled(signal != NULL && !signal->profile()->isEmpty());
 
 	if (signal == NULL)
 		ui->tabWidget->setCurrentIndex(1);
-	else
-		ui->segmentsTab->connect(signal, SIGNAL(signalDidChanged(bool)), SLOT(setEnabled(bool)));
+//	else
+//		ui->segmentsTab->connect(signal, SIGNAL(signalDidChanged(bool)), SLOT(setEnabled(bool)));
 
   ui->lengthLabel->setText( signal ? APUtils::formattedTime(signal->length(), "%hh %mm %ss") : "h m s" );
 	ui->nameLineEdit->setText(signal ? signal->name() : "");
@@ -576,7 +576,7 @@ void MainWindow::writingDidEnd(bool success, QObject *signal, QString msg)
 {
 	if (success) {
 		ui->pathLabel->setText( ((EPSignal *)signal)->fileInfo().filePath() );
-		EPSignalsController::activeSignal()->setChanged(false);
+    EPSignalsController::activeSignal()->setChanged(false);
 	} else
 		QMessageBox::warning(this, "Writing error", "An error ocurred while writing.\n\n" + msg);
 }
