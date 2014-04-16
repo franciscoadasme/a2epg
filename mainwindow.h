@@ -38,11 +38,12 @@ public slots:
 	void saveAll();
 	void showPreferences();
 	void updateSegmentLabel();
+  void updateInfoSegments();
 	void navWidgetVisibilityChanged(bool);
 
 	void disconnectFromSignal(EPSignal *oldSignal);
 	void updateUIComponentsForSignal(EPSignal *signal);
-	void updateScrollBar();
+  void updateScrollBar();
 
 	void readingDidEnd(bool success, QObject *, QString msg);
 	void writingDidEnd(bool success, QObject *, QString msg);

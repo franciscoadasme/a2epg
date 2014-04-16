@@ -528,6 +528,12 @@ void MainWindow::updateInfoComponentsForSignal(EPSignal *signal)
 	ui->navWidget->adjustSize();
 }
 
+void MainWindow::updateInfoSegments()
+{
+  EPSignal *signal = EPSignalsController::activeSignal();
+  ui->segmentsTab->setEnabled(!signal->profile()->isEmpty());
+}
+
 void MainWindow::updateSegmentLabel()
 {
 	if (EPSignalsController::hasActiveSignal()) {
@@ -581,6 +587,8 @@ void MainWindow::updateUIComponentsForSignal(EPSignal *signal)
             this, SLOT(scrollToSegment(EPSegment*)));
 		connect(signal->profile(), SIGNAL(segmentsDidChange()),
 				this, SLOT(updateSegmentLabel()));
+    connect(signal, SIGNAL(signalDidChanged()),
+            this, SLOT(updateInfoSegments()));
 	} else {
 		ui->segmentsTableView->setModel(NULL);
 	}
