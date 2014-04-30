@@ -103,7 +103,7 @@ void EPSignalWriter::writeDat()
 
 	int pointsInOnePercent = points.length() / 100.0;
 	for (int i = 0; i < points.length(); i++) {
-		stream << points[i];
+    stream << points[i] << "\n";
 
 		if (i % pointsInOnePercent == 0)
 			emit progressDidChange(i);
