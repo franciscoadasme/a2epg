@@ -32,7 +32,7 @@ void APViewportHandler::changeZoom(Qt::Orientation orientation, float step)
   _zoomValues[orientation] += step;
 	emit zoomDidChange();
 
-	if (_zoomValues[orientation] < BottomLimit) {
+  if (this->isAtZoomLimit(orientation)) {
 		emit zoomLimitWasReached(orientation);
 	} else
 		emit zoomLimitWasAvoid(orientation);
@@ -109,6 +109,11 @@ void APViewportHandler::increaseHorizontalZoom()
 void APViewportHandler::increaseVerticalZoom()
 {
 	changeZoom(Qt::Vertical, Step);
+}
+
+bool APViewportHandler::isAtZoomLimit(Qt::Orientation orientation)
+{
+  return _zoomValues[orientation] < BottomLimit;
 }
 
 uint APViewportHandler::numberOfPointsThatCanBeDrawnInWidth(uint width)

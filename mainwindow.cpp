@@ -42,10 +42,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	setUpConnections();
 	setUpActionsAndMenus();
 
-    move(QApplication::desktop()->screen()->rect().center() - rect().center());
-
-	QCoreApplication::setOrganizationName("nosze");
-	QCoreApplication::setApplicationName("autoepg");
+  move(QApplication::desktop()->screen()->rect().center() - rect().center());
 
 	APSegmentTypesController::shared();
 }

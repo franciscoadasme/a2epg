@@ -21,6 +21,14 @@ APZoomWidget::APZoomWidget(QWidget *parent) :
 	_hotspot.adjust(0, 0, 8, 8); // add a padding to cover right bottom margin
 
 	setUpConnections();
+  updateUi();
+
+  foreach (Qt::Orientation orientation, QList<Qt::Orientation>() << Qt::Horizontal << Qt::Vertical) {
+    if (APViewportHandler::shared()->isAtZoomLimit(orientation)) {
+      disableButtonForOrientation(orientation);
+    }
+  }
+
 	hide();
 }
 

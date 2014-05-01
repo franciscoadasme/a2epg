@@ -24,6 +24,7 @@ public:
 	static void goTo(uint position, Qt::AlignmentFlag aligment = Qt::AlignLeft, QWidget *target = NULL);
 	float transform(float num, Qt::Orientation orientation = Qt::Horizontal);
 	void move(int step);
+  bool isAtZoomLimit(Qt::Orientation orientation);
 
     inline static float horizontalScale() { return 1; }
     inline static float verticalScale() { return 64; }

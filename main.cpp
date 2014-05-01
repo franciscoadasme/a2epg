@@ -3,9 +3,13 @@
 
 int main(int argc, char *argv[])
 {
-    QApplication a(argc, argv);
-	MainWindow *w = MainWindow::instance();
-	w->show();
+  QApplication a(argc, argv);
 
-    return a.exec();
+  QCoreApplication::setOrganizationName("nosze");
+  QCoreApplication::setApplicationName("autoepg");
+
+  MainWindow *w = MainWindow::instance();
+  w->show();
+
+  return a.exec();
 }
