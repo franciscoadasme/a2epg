@@ -23,6 +23,7 @@ APPreferencesWidget::APPreferencesWidget(QWidget *parent) :
 	ui->askWhenDeletingSegmentCheckBox->setChecked(settings.value(AskWhenDeletingSegmentsKey, true).toBool());
 	ui->liveSegmentResizingCheckBox->setChecked(settings.value(LiveSegmentResizingKey, false).toBool());
 	ui->openInfoCheckBox->setChecked(settings.value(OpenInfoOnSignalChangeKey, false).toBool());
+  ui->pdMaximumDurationSpinBox->setValue(settings.value(PdMaximumDurationKey, 10).toFloat());
 
 	ui->segmentTypesTableView->setModel(APSegmentTypesController::shared()->arrangedObjects());
 	APSegmentTypesController::shared()->setSelectionModel(ui->segmentTypesTableView->selectionModel());
@@ -117,4 +118,10 @@ void APPreferencesWidget::on_createSegmentTypeButton_clicked()
 	}
 
 	APSegmentTypesController::shared()->addSegmentType(text, APUtils::randomColor());
+}
+
+void APPreferencesWidget::on_pdMaximumDurationSpinBox_valueChanged(double value)
+{
+  QSettings settings;
+  settings.setValue(PdMaximumDurationKey, value);
 }

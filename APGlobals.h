@@ -61,7 +61,8 @@ inline static float transformNumberOfPointsToSeconds(float numberOfPoints) { ret
 #define AskWhenDeletingSegmentsKey "AskWhenDeletingSegments"
 #define LiveSegmentResizingKey "LiveSegmentResizing"
 #define OpenInfoOnSignalChangeKey "OpenInfoOnSignalChange"
-#define ZoomHorizontalKey "ZoomHorizontalKey"
-#define ZoomVerticalKey "ZoomVerticalKey"
+#define ZoomHorizontalKey "ZoomHorizontal"
+#define ZoomVerticalKey "ZoomVertical"
+#define PdMaximumDurationKey "PdMaximumDuration"
 
 #endif // APGLOBALS_H

@@ -18,11 +18,13 @@ void APNewPdSeeker::loadDefaults()
 {
 	APSeeker::loadDefaults();
 
+  QSettings settings;
+
 	setParam("peakWindowSize", 10);
 	setParam("minimumHeight", .6);
 
 	setParam("minimumDuration", transformSecondsToNumberOfPoints(2));
-	setParam("maximumDuration", transformSecondsToNumberOfPoints(10));
+  setParam("maximumDuration", transformSecondsToNumberOfPoints(settings.value(PdMaximumDurationKey, 10).toFloat()));
 
   setParam("needsLog", false);
 	setParam("needsCleanUp", false);

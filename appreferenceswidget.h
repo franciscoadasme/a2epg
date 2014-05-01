@@ -30,6 +30,7 @@ private slots:
 	void on_removeSegmentTypeButton_clicked();
 
 	void on_createSegmentTypeButton_clicked();
+  void on_pdMaximumDurationSpinBox_valueChanged(double value);
 
 private:
     Ui::APPreferencesWidget *ui;
