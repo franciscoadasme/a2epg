@@ -24,7 +24,7 @@ public:
 	static QString formattedTime(unsigned int timestamp, QString format);
 
 	static void paintSignalUsingPainterWithRect(EPSignal *signal, QPainter *painter, QRect bounds);
-	static void paintHorizontalGridInRect(QPainter *painter, QRect rect);
+	static void paintVerticalGridInRect(QPainter *painter, QRect rect);
 
 	static float sum(QList<float> list);
 	static bool isPeak(float num, QList<float> valuesInsideWindow, Direction dir);

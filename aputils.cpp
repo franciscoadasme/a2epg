@@ -137,7 +137,7 @@ void APUtils::paintSignalUsingPainterWithRect(EPSignal *signal, QPainter *painte
 	painter->restore();
 }
 
-void APUtils::paintHorizontalGridInRect(QPainter *painter, QRect rect)
+void APUtils::paintVerticalGridInRect(QPainter *painter, QRect rect)
 {
 	painter->save();
 

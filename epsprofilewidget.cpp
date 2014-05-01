@@ -242,8 +242,8 @@ void EPSProfileWidget::paintEvent(QPaintEvent *event)
 	if (isOversized)
 		painter->translate(0, -innerVerticalOffset);
 
-	APUtils::paintHorizontalGridInRect(painter, rect());
-	paintHorizontalGrid(painter);
+  APUtils::paintVerticalGridInRect(painter, rect().adjusted(0, 0, 0, innerVerticalOffset));
+  paintHorizontalGrid(painter);
 
 	QList<int> types = _profile->currentTypes();
 	uint verticalOffset = SegmentRowVerticalSpace;
@@ -292,7 +292,7 @@ void EPSProfileWidget::paintHorizontalGrid(QPainter *painter)
 	painter->save();
 
 	painter->setPen(EPSProfileWidget::segmentLineColor());
-	for (int verticalOffset = SegmentRowVerticalSpace; verticalOffset < height(); verticalOffset += SegmentRowVerticalSpace) {
+  for (int verticalOffset = SegmentRowVerticalSpace; verticalOffset < height() + innerVerticalOffset; verticalOffset += SegmentRowVerticalSpace) {
 		painter->drawLine(QPoint(0, verticalOffset), QPoint(width(), verticalOffset));
 	}
 

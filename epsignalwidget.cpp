@@ -226,7 +226,7 @@ void EPSignalWidget::paintEvent(QPaintEvent *paintEvent)
 
 	QPainter *painter = new QPainter(this);
 
-	APUtils::paintHorizontalGridInRect(painter, rect());
+	APUtils::paintVerticalGridInRect(painter, rect());
 
 	painter->save(); {
 		painter->translate(0, verticalOffset());
