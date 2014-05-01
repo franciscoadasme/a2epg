@@ -201,7 +201,7 @@ void APSeekerWidget::showInfoMessage()
 
 	int numberOfFoundSegments = 0;
 	foreach (APSeeker *seeker, _seekers) {
-		int count = seeker->numberOfProposedSegments();
+    int count = EPSignalsController::activeSignal()->profile()->segmentsOfType(seeker->type()).count();
 		if (count > 0) {
 			numberOfFoundSegments += count;
 			stream << qSetFieldWidth(2 +2) << left << APUtils::stringWithSegmentType(seeker->type())
