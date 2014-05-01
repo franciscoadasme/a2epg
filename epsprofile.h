@@ -33,6 +33,7 @@ public:
 	void fillGaps();
 
 	void mergeSameSegments();
+  void removeBadSegments();
 
 	int columnCount(const QModelIndex &) const;
 	QVariant data(const QModelIndex &index, int role) const;

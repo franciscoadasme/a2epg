@@ -283,6 +283,7 @@ void EPSProfile::fixInnerCollisions()
 
 	qSort(objects.begin(), objects.end(), EPSProfile::segmentLessThan);
 	mergeSameSegments();
+  removeBadSegments();
 
 	fixing = false;
 
@@ -447,6 +448,22 @@ void EPSProfile::remove()
 	editHandler->saveAction(APEditHandler::Remove, segment->serialize());
 
 	emit segmentsDidChange();
+}
+
+void EPSProfile::removeBadSegments()
+{
+  QList<EPSegment *> badSegments;
+  foreach (EPSegment *segment, this->segmentsOfType(All)) {
+    if (!segment->satisfyDurationRestriction() || segment->end() < segment->start()) {
+      badSegments << segment;
+    }
+  }
+
+  foreach (EPSegment *segment, badSegments) {
+    this->removeSegment(segment, true);
+  }
+
+  emit segmentsDidChange();
 }
 
 void EPSProfile::removeSegment(EPSegment *segment, bool silent)
