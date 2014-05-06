@@ -152,7 +152,7 @@ void APSequentialSeeker::seek()
 		}
 
 		if (middle() % pointsInOnePercent == 0) {
-			emit workThrowsMessage(tr("Proccessing %1%...").arg(qRound(middle() * 100.0 / points.count())));
+      emit workThrowsMessage(tr("Processing %1%...").arg(qRound(middle() * 100.0 / points.count())));
 			emit progressDidChange(qRound(middle() * 100.0 / points.count()));
 		}
 
