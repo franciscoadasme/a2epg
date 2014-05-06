@@ -64,5 +64,6 @@ inline static float transformNumberOfPointsToSeconds(float numberOfPoints) { ret
 #define ZoomHorizontalKey "ZoomHorizontal"
 #define ZoomVerticalKey "ZoomVertical"
 #define PdMaximumDurationKey "PdMaximumDuration"
+#define FillGapsDuringScanKey "FillGapsDuringScan"
 
 #endif // APGLOBALS_H

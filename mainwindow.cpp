@@ -267,8 +267,9 @@ void MainWindow::removeFocusedSegmentAction()
 
 void MainWindow::runAll()
 {
+  QSettings settings;
   runSearchEngines(QList<SegmentType>() << Np << C << Pd << E1 << G,
-                   ui->actionFill_Gaps->isChecked());
+                   settings.value(FillGapsDuringScanKey).toBool());
 }
 
 void MainWindow::runChecked()
@@ -443,7 +444,18 @@ void MainWindow::setUpPanoramic()
 
 void MainWindow::showPreferences()
 {
-	APPreferencesWidget::open();
+  APPreferencesWidget::open();
+}
+
+void MainWindow::showPreferences(int tabIndex = APPreferencesWidget::TabGeneral)
+{
+  APPreferencesWidget::setCurrentTab(tabIndex);
+  APPreferencesWidget::open();
+}
+
+void MainWindow::showScanPreferences()
+{
+  showPreferences(APPreferencesWidget::TabScan);
 }
 
 void MainWindow::updateScrollBar()

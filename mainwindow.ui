@@ -140,12 +140,12 @@
    </widget>
    <widget class="QMenu" name="menuSearch">
     <property name="title">
-     <string>Analyze</string>
+     <string>Scan</string>
     </property>
     <addaction name="actionRun_all"/>
     <addaction name="actionRun_marked"/>
     <addaction name="separator"/>
-    <addaction name="actionFill_Gaps"/>
+    <addaction name="actionChange_Parameters"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
@@ -540,7 +540,7 @@ padding: 2px 4px;
      <normaloff>:/resources/run.png</normaloff>:/resources/run.png</iconset>
    </property>
    <property name="text">
-    <string>Run All Engines</string>
+    <string>Scan All</string>
    </property>
   </action>
   <action name="actionRun_marked">
@@ -549,7 +549,7 @@ padding: 2px 4px;
      <normaloff>:/resources/runchecked.png</normaloff>:/resources/runchecked.png</iconset>
    </property>
    <property name="text">
-    <string>Run</string>
+    <string>Scan</string>
    </property>
   </action>
   <action name="actionQuit">
@@ -699,6 +699,11 @@ padding: 2px 4px;
    </property>
    <property name="toolTip">
     <string>Fill gaps when running all search engines</string>
+   </property>
+  </action>
+  <action name="actionChange_Parameters">
+   <property name="text">
+    <string>Change Parameters</string>
    </property>
   </action>
  </widget>
@@ -1105,6 +1110,22 @@ padding: 2px 4px;
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>actionChange_Parameters</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>showScanPreferences()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>327</x>
+     <y>294</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>openFile()</slot>
@@ -1120,5 +1141,6 @@ padding: 2px 4px;
   <slot>saveAll()</slot>
   <slot>saveAs()</slot>
   <slot>goTo()</slot>
+  <slot>showScanPreferences()</slot>
  </slots>
 </ui>

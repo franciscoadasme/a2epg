@@ -36,7 +36,9 @@ public slots:
 	void save();
 	void saveAs();
 	void saveAll();
-	void showPreferences();
+  void showPreferences();
+  void showPreferences(int tabIndex);
+  void showScanPreferences();
 	void updateSegmentLabel();
   void updateInfoSegments();
 	void navWidgetVisibilityChanged(bool);

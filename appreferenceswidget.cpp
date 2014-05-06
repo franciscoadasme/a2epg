@@ -24,6 +24,7 @@ APPreferencesWidget::APPreferencesWidget(QWidget *parent) :
 	ui->liveSegmentResizingCheckBox->setChecked(settings.value(LiveSegmentResizingKey, false).toBool());
 	ui->openInfoCheckBox->setChecked(settings.value(OpenInfoOnSignalChangeKey, false).toBool());
   ui->pdMaximumDurationSpinBox->setValue(settings.value(PdMaximumDurationKey, 10).toFloat());
+  ui->fillGapsCheckBox->setChecked(settings.value(FillGapsDuringScanKey, true).toBool());
 
 	ui->segmentTypesTableView->setModel(APSegmentTypesController::shared()->arrangedObjects());
 	APSegmentTypesController::shared()->setSelectionModel(ui->segmentTypesTableView->selectionModel());
@@ -124,4 +125,18 @@ void APPreferencesWidget::on_pdMaximumDurationSpinBox_valueChanged(double value)
 {
   QSettings settings;
   settings.setValue(PdMaximumDurationKey, value);
+}
+
+void APPreferencesWidget::on_fillGapsCheckBox_stateChanged(int state)
+{
+  QSettings settings;
+  settings.setValue(FillGapsDuringScanKey, state != 0);
+}
+
+void APPreferencesWidget::setCurrentTab(int tabIndex)
+{
+  if (tabIndex < 0) { tabIndex = 0; }
+  if (tabIndex > instance()->ui->TabWidget->count() - 1) {
+    tabIndex = instance()->ui->TabWidget->count() - 1; }
+  instance()->ui->TabWidget->setCurrentIndex(tabIndex);
 }

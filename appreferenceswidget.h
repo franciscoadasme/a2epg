@@ -16,7 +16,14 @@ public:
     explicit APPreferencesWidget(QWidget *parent = 0);
     ~APPreferencesWidget();
 
+  enum PreferencesTabs {
+    TabGeneral = 0,
+    TabWaveforms,
+    TabScan
+  };
+
 	static void open();
+  static void setCurrentTab(int tabIndex);
 
 private slots:
 	void on_openPanoramicCheckBox_clicked();
@@ -31,6 +38,7 @@ private slots:
 
 	void on_createSegmentTypeButton_clicked();
   void on_pdMaximumDurationSpinBox_valueChanged(double value);
+  void on_fillGapsCheckBox_stateChanged(int state);
 
 private:
     Ui::APPreferencesWidget *ui;
