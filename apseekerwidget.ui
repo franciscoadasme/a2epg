@@ -17,7 +17,7 @@
    </size>
   </property>
   <property name="windowTitle">
-   <string>AutoEPG ~ Searching</string>
+   <string>AutoEPG ~ Scanning</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <property name="spacing">

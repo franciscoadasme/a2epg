@@ -139,7 +139,7 @@ void APSeekerWidget::dispatchSeekersForTypes(QList<SegmentType> types, bool shou
 	seekerWidget->setMaximumHeight(seekerWidget->height());
 
 	seekerWidget->ui->progressBar->setMaximum(100 * types.length());
-	seekerWidget->ui->title->setText(tr("Running %1").arg(signal->name()));
+  seekerWidget->ui->title->setText(tr("Scanning %1").arg(signal->name()));
 
 	APSeekerWidget::_running = true;
 	seekerWidget->setWindowModality(Qt::ApplicationModal);
@@ -229,18 +229,20 @@ void APSeekerWidget::showInfoMessage()
 
 	QString message;
 	if (numberOfFoundSegments > 0) {
-		message = tr("<strong>%1</strong> segment%2 in <strong>%3</strong>:%4")
+    message = tr("<strong>%1</strong> segment%2 found, split in:%3")
 				.arg(numberOfFoundSegments)
-				.arg(numberOfFoundSegments > 1 ? "s" : "")
-				.arg(elapsed)
+        .arg(numberOfFoundSegments > 1 ? "s were" : " was")
 				.arg("<pre>" + details + "</pre>");
-	} else
-		message = "No segments found.";
+  } else {
+    message = tr("No segments found.");
+  }
+
+  message += tr("\n\nElapsed time: %1.").arg(elapsed);
 
 	QMessageBox box(this);
-	box.setWindowTitle("AutoEPG ~ Seeker Report");
+  box.setWindowTitle("AutoEPG ~ Scan Results");
 	box.setIcon(QMessageBox::Information);
-	box.setText("<strong>Search engines have finished successfully.</strong>");
+  box.setText("<strong>Scan engines have finished successfully.</strong>");
 	box.setInformativeText(message);
 	box.setTextFormat(Qt::RichText);
 	box.exec();
