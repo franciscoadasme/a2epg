@@ -121,14 +121,25 @@ QVariant EPSProfile::data(const QModelIndex &index, int role) const
 void EPSProfile::fillGaps()
 {
 	for (int i = 0; i < count() - 2; i++) {
-		EPSegment *left = (EPSegment *)objectAt(i);
-		EPSegment *right = (EPSegment *)objectAt(i + 1);
+    EPSegment *current = (EPSegment *)objectAt(i);
+    EPSegment *next = (EPSegment *)objectAt(i + 1);
 
-		if (left->type() == right->type()) {
-			left->setEnd(right->end(), true);
-			removeSegment(right);
-			i--;
-		}
+    if (current->type()->id() == Pd) {
+      if (next->type()->id() != Pd) {
+        next->setStart(current->end() + 1, true);
+      } else {
+        // If there are two contiguous Pds, add a C segment between them
+        addSegment(C, current->end() + 1, next->start() - 1, QString(), true);
+      }
+    } else {
+      if (current->type()->id() == next->type()->id()) {
+        current->setEnd(next->end(), true);
+        removeSegment(next);
+        i--;
+      } else {
+        current->setEnd(next->start() - 1, true);
+      }
+    }
 	}
 
 	EPSegment *first = (EPSegment *)objectAt(0);
