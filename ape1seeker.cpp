@@ -32,7 +32,6 @@ void APE1Seeker::loadDefaults()
 
 bool APE1Seeker::isAllowedPoint()
 {
-
 	QList<float> topPeakIndices = peaksInsideWindow(Up,false);
 	QList<float> bottomPeakIndices = peaksInsideWindow(Down,false);
 
@@ -57,7 +56,6 @@ bool APE1Seeker::isAllowedPoint()
 	indices.append(topPeakIndices);
 	indices.append(bottomPeakIndices);
 
-	emit workThrowsMessage("Sorting found peaks...");
 	qSort(indices);
 
 	for(int i=0; i < indices.length()-1 ; i++) {
