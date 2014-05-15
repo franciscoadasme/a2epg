@@ -27,7 +27,12 @@ EPSignalReader::EPSignalReader(
   readSignalCount = 0;
   _totalFileCountToRead = APNotFound;
   this->groupedFilePaths = groupedFilePaths;
-  moveToThread(this);
+}
+
+EPSignalReader::~EPSignalReader()
+{
+  qDeleteAll(successfulRecords);
+  successfulRecords.clear();
 }
 
 void EPSignalReader::dispatchReader(
@@ -35,16 +40,17 @@ void EPSignalReader::dispatchReader(
   QObject *target,
   const char *callback)
 {
-  EPSignalReader *reader = new EPSignalReader(groupedFilePaths);
+  EPSignalReader *reader = new EPSignalReader(groupedFilePaths, target);
   connect(reader, SIGNAL(workDidEnd(bool, QObject*, QString)),
           target, callback);
+  connect(reader, &EPSignalReader::finished,
+          reader, &QObject::deleteLater);
 	APStatusController::bindToWorker(reader);
 	reader->start();
 }
 
 void EPSignalReader::run()
 {
-  QList<EPSignal *> successfulRecords;
   QMap<QString, QString> failedRecords;
 
   emit workLengthDidChange(totalFileCountToRead());

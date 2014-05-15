@@ -50,6 +50,7 @@ void EPSignalsController::closeSignal()
 
 	remove();
 	setActiveSignal((EPSignal *)selectedObject());
+  delete signal;
 }
 
 int EPSignalsController::columnCount(const QModelIndex &) const

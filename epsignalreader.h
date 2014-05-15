@@ -13,6 +13,7 @@ public:
   explicit EPSignalReader(
     QList<QStringList> groupedFilePaths,
     QObject *parent = 0);
+  ~EPSignalReader();
   static void dispatchReader(
     QList<QStringList> groupedFilePaths,
     QObject *target,
@@ -33,6 +34,8 @@ private:
   QList<QStringList> groupedFilePaths;
   int totalFileCountToRead();
   int totalRecordCountToRead();
+
+  QList<EPSignal *> successfulRecords;
 
   bool readFileGroup(QStringList filePaths);
   bool readFile(QString filePath);
