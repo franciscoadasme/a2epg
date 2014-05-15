@@ -120,8 +120,9 @@ QVariant EPSProfile::data(const QModelIndex &index, int role) const
 
 void EPSProfile::fillGaps()
 {
-	for (int i = 0; i < count() - 2; i++) {
+  for (int i = 0; i < count() - 1; i++) {
     EPSegment *current = (EPSegment *)objectAt(i);
+    if (current == objects.last()) break;
     EPSegment *next = (EPSegment *)objectAt(i + 1);
 
     if (current->type()->id() == Pd) {
