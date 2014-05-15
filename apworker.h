@@ -15,10 +15,10 @@ signals:
 	void workLengthDidChange(int);
 	void workDidBegin();
 	void workDidBegin(QString);
-	void workDidEnd();
-	void workDidEnd(bool, QObject *, QString);
+  void workDidEnd();
+  void workDidEnd(bool, QObject *, QString);
 	void workThrowsMessage(QString);
-	void progressDidChange(int);
+  void progressDidChange(int);
 
 private:
 	QObject *_object;

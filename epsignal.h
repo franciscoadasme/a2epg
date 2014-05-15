@@ -5,23 +5,24 @@
 #include <QFileInfo>
 #include "epsprofile.h"
 #include "APGlobals.h"
+#include "apfileinfo.h"
 
 class EPSegment;
 
 class EPSignal : public QObject
 {
-    Q_OBJECT
+  Q_OBJECT
 	Q_PROPERTY (QString name READ name WRITE setName NOTIFY nameDidChanged)
 
 public:
 	explicit EPSignal(QString filepath, int id = APNotFound, QObject *parent = 0);
 
-    enum FileType {
-        EPG,
-        Dat,
-        Acquisition,
-        Unknown
-    };
+  enum FileType {
+    EPG,
+    Dat,
+    Acquisition,
+    Unknown
+  };
 
 	// accessors
 	int id();
@@ -31,16 +32,16 @@ public:
 	void setComments(QString aComment);
   void appendComment(QString aComment);
 	bool isCommented();
-	QFileInfo fileInfo();
-  QList<QFileInfo> fileInfos();
-  void setFileInfo(QFileInfo fileInfo);
+  APFileInfo fileInfo();
+  QList<APFileInfo> fileInfos();
+  void setFileInfo(APFileInfo fileInfo);
   void appendFilePath(QString filePath);
 	QList<float> points();
 	uint length();
 	uint numberOfPoints();
 	EPSProfile *profile();
 	bool hasMorePointsThan(uint number);
-    FileType fileType();
+  FileType fileType();
 
 	bool hasChanged();
 	void setChanged(bool changed);
@@ -67,25 +68,17 @@ signals:
 
 private:
 	int _id;
-    QString _name;
+  QString _name;
 	QString _comments;
-  QList<QFileInfo> _fileInfos;
+  QList<APFileInfo> _fileInfos;
 	bool _changed;
-    FileType _fileType;
+  FileType _fileType;
 
 	QList<float> _points;
 	EPSProfile *_profile;
 	float _minimum, _maximum;
 
-    inline static FileType deriveFileType(QFileInfo fileInfo) {
-        if (fileInfo.suffix() == "epg") return EPSignal::EPG;
-        if (fileInfo.suffix() == "dat") return EPSignal::Dat;
-
-        static QRegExp rx("((.+)?\\.)?D0\\d");
-        if (rx.exactMatch(fileInfo.fileName())) return EPSignal::Acquisition;
-
-        return EPSignal::Unknown;
-    }
+  EPSignal::FileType deriveFileType(APFileInfo fileInfo);
 };
 
 #endif // EPSIGNAL_H

@@ -45,7 +45,10 @@ SOURCES += main.cpp\
     ape1seeker.cpp \
 	apnewpdseeker.cpp \
     apseekerpickerdialog.cpp \
-    apedithandler.cpp
+    apedithandler.cpp \
+    apfiledialog.cpp \
+    apsettings.cpp \
+    apfileinfo.cpp
 
 HEADERS  += mainwindow.h \
     epsignal.h \
@@ -82,7 +85,10 @@ HEADERS  += mainwindow.h \
 	apnewpdseeker.h \
     apseekerpickerdialog.h \
     apedithandler.h \
-    apversion.h
+    apversion.h \
+    apfiledialog.h \
+    apsettings.h \
+    apfileinfo.h
 
 FORMS    += mainwindow.ui \
     apzoomwidget.ui \

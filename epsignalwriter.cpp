@@ -2,14 +2,15 @@
 
 #include <QDebug>
 #include "apstatuscontroller.h"
+#include <QXmlStreamWriter>
 
 EPSignalWriter::EPSignalWriter(QString filepath, EPSignal *eps, int options, QObject *parent) :
-	APWorker(parent)
+  APWorker(NULL, parent)
 {
 	moveToThread(this);
 
 	_epsignal = eps;
-	_fileInfo = QFileInfo(filepath);
+  _fileInfo = APFileInfo(filepath);
 
 	if (options & BasedOnExtension) {
 		if (_fileInfo.suffix() == "epg") {

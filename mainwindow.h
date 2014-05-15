@@ -47,7 +47,7 @@ public slots:
 	void updateUIComponentsForSignal(EPSignal *signal);
   void updateScrollBar();
 
-	void readingDidEnd(bool success, QObject *, QString msg);
+  void readingDidEnd(bool success, QObject *, QString msg);
 	void writingDidEnd(bool success, QObject *, QString msg);
 
 	void removeFocusedSegmentAction();

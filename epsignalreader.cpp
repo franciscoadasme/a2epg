@@ -1,6 +1,8 @@
 #include "epsignalreader.h"
 #include <QFile>
 #include <QTextStream>
+#include <QXmlStreamReader>
+#include <QMap>
 
 #include <QDebug>
 
@@ -14,65 +16,64 @@ using namespace std;
 #include "APGlobals.h"
 #include "aputils.h"
 #include "apstatuscontroller.h"
+#include "apfileinfo.h"
 
-EPSignalReader::EPSignalReader(EPSignal *eps, bool loadRelatedFiles, QObject *parent) :
-	APWorker(eps, parent)
+EPSignalReader::EPSignalReader(
+  QList<QStringList> groupedFilePaths,
+  QObject *parent) :
+  APWorker(NULL, parent)
 {
-	_epsignalLength = APEmpty; // length not known
-	_epsignal = (EPSignal *)object();
-  _loadRelatedFiles = loadRelatedFiles;
-	totalProgress = 0;
-	moveToThread(this);
+  readFileCount = 0;
+  readSignalCount = 0;
+  _totalFileCountToRead = APNotFound;
+  this->groupedFilePaths = groupedFilePaths;
+  moveToThread(this);
 }
 
-EPSignalReader *EPSignalReader::reader(QString filepath, bool loadRelatedFiles)
+void EPSignalReader::dispatchReader(
+  QList<QStringList> groupedFilePaths,
+  QObject *target,
+  const char *callback)
 {
-  EPSignalReader *reader = new EPSignalReader(new EPSignal(filepath), loadRelatedFiles);
-	return reader;
-}
-
-void EPSignalReader::dispatchReader(QString filePath, QObject *target, const char *callback, bool loadRelatedFiles)
-{
-  EPSignalReader *reader = EPSignalReader::reader(filePath, loadRelatedFiles);
-	connect(reader, SIGNAL(workDidEnd(bool, QObject*, QString)),
-			target, callback);
+  EPSignalReader *reader = new EPSignalReader(groupedFilePaths);
+  connect(reader, SIGNAL(workDidEnd(bool, QObject*, QString)),
+          target, callback);
 	APStatusController::bindToWorker(reader);
 	reader->start();
 }
 
 void EPSignalReader::run()
 {
-  QFileInfo fileInfo = _epsignal->fileInfo();
-  emit workDidBegin("Reading " + fileInfo.fileName());
+  QList<EPSignal *> successfulRecords;
+  QMap<QString, QString> failedRecords;
 
-  if (_epsignal->fileType() == EPSignal::Unknown) {
-    errorMessage = "Unknown file type";
-    emitReadingError();
-    return;
-  }
+  emit workLengthDidChange(totalFileCountToRead());
+  emit progressDidChange(0); // reset progress indicator
 
-  QStringList filePaths = retrieveFilePaths();
-  emit workLengthDidChange(_epsignalLength * filePaths.count());
-#if DebugReading
-  qDebug() << filePaths;
-#endif
-
-  bool success = true;
-  foreach (QString filePath, filePaths) {
-    success = readFile(filePath);
-    if (!success) break;
-    _epsignal->appendFilePath(filePath);
-  }
-
-  if (success) {
-    if (filePaths.size() > 1) {
-      _epsignal->setName(EPSignalReader::suggestedCollectionNameBasedOnFilePath(filePaths.first()));
+  foreach (QStringList filePaths, groupedFilePaths) {
+    _epsignal = new EPSignal(filePaths.first());
+    int success = readFileGroup(filePaths);
+    if (success) {
+      if (filePaths.size() > 1) {
+        _epsignal->setName(_epsignal->fileInfo().baseName());
+      }
+      _epsignal->setChanged(false);
+      successfulRecords << _epsignal;
+    } else {
+      failedRecords[filePaths.first()] = errorMessage;
     }
-    _epsignal->setChanged(false);
+    readSignalCount++;
+  }
+
+  if (failedRecords.isEmpty()) {
     emit workDidEnd();
-    emit workDidEnd(success, _epsignal, successMessageForFilePaths(filePaths));
+    foreach (EPSignal *signal, successfulRecords) {
+      emit workDidEnd(true,
+                      signal,
+                      successMessageForSignals(successfulRecords));
+    }
   } else {
-    emitReadingError();
+    emitReadingErrors(failedRecords);
   }
 }
 
@@ -110,16 +111,11 @@ bool EPSignalReader::readDat(QString filePath)
         return false;
     }
 
-	emit workDidBegin(tr("Reading %1").arg(QFileInfo(filePath).fileName()));
-
 	QTextStream stream(&file);
   while (!stream.atEnd()) {
     QString line = stream.readLine();
     float value = line.toFloat();
     _epsignal->pushPoint(value);
-
-		if (_epsignalLength != APEmpty && ++totalProgress % 500 == 0) // report each 500 lines
-			emit progressDidChange(totalProgress);
 	}
 
     return true;
@@ -127,16 +123,36 @@ bool EPSignalReader::readDat(QString filePath)
 
 bool EPSignalReader::readFile(QString filePath)
 {
-    switch (_epsignal->fileType()) {
+  QString beginMessage = tr("Reading %1").arg(QFileInfo(filePath).fileName());
+  if (groupedFilePaths.count() > 1) {
+    beginMessage += tr(" (%1/%2)").arg(readSignalCount + 1)
+                                  .arg(totalRecordCountToRead());
+  }
+  emit workDidBegin(beginMessage);
+
+  switch (_epsignal->fileType()) {
     case EPSignal::Acquisition:
-        return readBinary(filePath);
+      return readBinary(filePath);
     case EPSignal::Dat:
-        return readDat(filePath);
+      return readDat(filePath);
     case EPSignal::EPG:
-        return readEPG();
+      return readEPG();
     default:
-        return false;
-    }
+      errorMessage = "Unknown file type";
+      return false;
+  }
+}
+
+bool EPSignalReader::readFileGroup(QStringList filePaths)
+{
+  bool success = true;
+  foreach (QString filePath, filePaths) {
+    success = readFile(filePath);
+    emit progressDidChange(++readFileCount);
+    if (!success) break;
+    _epsignal->appendFilePath(filePath);
+  }
+  return success;
 }
 
 bool EPSignalReader::readEPG()
@@ -203,8 +219,6 @@ bool EPSignalReader::readInfo()
             _epsignal->setName(_xmlReader->readElementText());
         else if (_xmlReader->name() == "comments")
             _epsignal->setComments(_xmlReader->readElementText());
-        else if (_xmlReader->name() == "length")
-            _epsignalLength = _xmlReader->readElementText().toInt();
         else
             _xmlReader->skipCurrentElement();
     }
@@ -274,101 +288,47 @@ bool EPSignalReader::readSegments()
 	return true;
 }
 
-QStringList EPSignalReader::retrieveFilePaths()
+void EPSignalReader::emitReadingErrors(QMap<QString, QString> errors)
 {
-  QString filePath = _epsignal->fileInfo().filePath();
-  QStringList filePaths;
+  QStringList errorMessages;
+  QMapIterator<QString, QString> i(errors);
+  while (i.hasNext()) {
+    i.next();
+    errorMessages << tr("%1: %2").arg(APFileInfo(i.key()).fileName())
+                                 .arg(i.value());
+  }
+  emit workDidEnd(false, NULL, errorMessages.join("\n"));
+}
 
-  if (_loadRelatedFiles && EPSignalReader::isFilePathNumbered(filePath)) {
-    QRegularExpression rx = regexForFilePath(filePath);
-    QString index = rx.match(filePath).captured();
-    bool isZeroPadded = index.startsWith('0') && index.length() > 1;
+QString EPSignalReader::successMessageForSignals(QList<EPSignal *> records)
+{
+  QString message;
+  if (records.count() > 1) {
+    message += tr("%1 records were").arg(records.count());
+  } else {
+    message += "One record was";
+  }
+  return message + " loaded.";
+}
 
-    for (int i = 1; i < 10; i++) {
-      index = QString::number(i);
-      if (isZeroPadded) index.prepend("0");
-
-      QString path = filePath;
-      path.replace( rx, index );
-      if (!filePaths.contains(path) && QFileInfo(path).exists())
-        filePaths << path;
+int EPSignalReader::totalFileCountToRead()
+{
+  if (_totalFileCountToRead == APNotFound) {
+    _totalFileCountToRead = 0;
+    foreach (QStringList filePaths, groupedFilePaths) {
+      _totalFileCountToRead += filePaths.count();
     }
   }
 
-  if (!filePaths.contains(filePath)) {
-    filePaths << filePath;
+  if (_totalFileCountToRead == 1) {
+    // Force to display an indetermined (busy) progress indicator
+    _totalFileCountToRead = 0;
   }
 
-	return filePaths;
+  return _totalFileCountToRead;
 }
 
-void EPSignalReader::emitReadingError()
+int EPSignalReader::totalRecordCountToRead()
 {
-	emit workDidEnd(false, NULL,
-					   tr("Can't read file %1:\n\n%2")
-					   .arg(_epsignal->fileInfo().fileName())
-                       .arg(errorMessage));
-}
-
-bool EPSignalReader::isFilePathNumbered(QString filePath)
-{
-    QRegularExpression rx = EPSignalReader::regexForFilePath(filePath);
-    return rx.isValid() && rx.match(filePath).hasMatch();
-}
-
-QRegularExpression EPSignalReader::regexForFilePath(QString filePath)
-{
-  EPSignal *signal = new EPSignal(filePath);
-
-  QString pattern;
-  switch (signal->fileType()) {
-  case EPSignal::Dat:
-  //        pattern = tr("?<=(\\.|\\.0))\\d(?=\\.dat");
-    pattern = tr("(?<=([^\\d]))0?\\d(?=\\.dat)");
-    break;
-  case EPSignal::Acquisition:
-    pattern = tr("(?<=\\.D0)\\d");
-    break;
-  default:
-    pattern = tr("(("); // invalid regex
-    break;
-  }
-
-  QRegularExpression rx(pattern);
-  return rx;
-}
-
-QString EPSignalReader::suggestedCollectionNameBasedOnFilePath(QString filePath)
-{
-  QRegularExpression regexp = EPSignalReader::regexForFilePath(filePath);
-  QRegularExpressionMatch match = regexp.match(filePath);
-
-  QString path = filePath;
-  path.remove(regexp);
-
-  QStringList separators;
-  separators << tr("-") << tr("_") << tr(".");
-  if (separators.contains(path.at(match.capturedStart() - 1))) {
-    path.remove(match.capturedStart() - 1, 1);
-  }
-
-  return QFileInfo(path).baseName();
-}
-
-QString EPSignalReader::successMessageForFilePaths(QStringList filePaths)
-{
-  QStringList fileNames;
-  foreach (QString filePath, filePaths) {
-    fileNames << QFileInfo(filePath).fileName();
-  }
-  QString lastFileName = fileNames.takeLast();
-
-  QString message;
-  if (fileNames.isEmpty()) {
-    message = lastFileName + tr(" was");
-  } else {
-    message = fileNames.join(", ") + tr(" and ") + lastFileName + tr(" were");
-  }
-
-  return message + " read.";
+  return groupedFilePaths.count();
 }

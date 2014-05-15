@@ -3,16 +3,20 @@
 
 #include "apworker.h"
 #include "epsignal.h"
-#include <QXmlStreamReader>
+
+class QXmlStreamReader;
 
 class EPSignalReader : public APWorker
 {
     Q_OBJECT
 public:
-  explicit EPSignalReader(EPSignal *eps, bool loadRelatedFiles = true, QObject *parent = 0);
-
-  static EPSignalReader *reader(QString filepath, bool loadRelatedFiles = true);
-  static void dispatchReader(QString filePath, QObject *target, const char *callback, bool loadRelatedFiles = true);
+  explicit EPSignalReader(
+    QList<QStringList> groupedFilePaths,
+    QObject *parent = 0);
+  static void dispatchReader(
+    QList<QStringList> groupedFilePaths,
+    QObject *target,
+    const char *callback);
   static bool isFilePathNumbered(QString filePath);
 
 protected:
@@ -21,11 +25,16 @@ protected:
 private:
   QString errorMessage;
   EPSignal *_epsignal;
-	int _epsignalLength;
   QXmlStreamReader *_xmlReader;
-	int totalProgress;
-  bool _loadRelatedFiles;
+  int readFileCount;
+  int readSignalCount;
+  int _totalFileCountToRead;
 
+  QList<QStringList> groupedFilePaths;
+  int totalFileCountToRead();
+  int totalRecordCountToRead();
+
+  bool readFileGroup(QStringList filePaths);
   bool readFile(QString filePath);
   bool readBinary(QString filePath);
   bool readDat(QString filePath);
@@ -33,12 +42,9 @@ private:
 	bool readInfo();
 	bool readSegment();
 	bool readSegments();
-  void emitReadingError();
+  void emitReadingErrors(QMap<QString, QString> errors);
 
-  static QRegularExpression regexForFilePath(QString filePath);
-  QStringList retrieveFilePaths();
-  static QString suggestedCollectionNameBasedOnFilePath(QString filePath);
-  QString successMessageForFilePaths(QStringList filePaths);
+  QString successMessageForSignals(QList<EPSignal *> records);
 };
 
 #endif // EPSIGNALREADER_H

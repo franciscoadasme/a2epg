@@ -12,6 +12,7 @@
 #include "ape1seeker.h"
 #include "APGlobals.h"
 #include "aputils.h"
+#include "apfileinfo.h"
 
 APSeeker::APSeeker(QObject *object, QObject *parent) :
 	APWorker(object, parent)

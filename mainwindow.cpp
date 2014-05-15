@@ -17,6 +17,8 @@
 #include "apsegmenttypescontroller.h"
 #include "apseekerpickerdialog.h"
 #include "apversion.h"
+#include "apfiledialog.h"
+#include "apfileinfo.h"
 
 MainWindow *MainWindow::_instance = NULL;
 
@@ -207,31 +209,12 @@ void MainWindow::keyReleaseEvent(QKeyEvent *event)
 
 void MainWindow::openFile()
 {
-	QSettings settings;
+  QList<QStringList> filePaths = APFileDialog::getGroupedOpenFileNames(this);
+  if (filePaths.isEmpty()) return;
 
-  QStringList filters;
-  filters << tr("All Supported files (*.epg *.D0* *.dat)")
-          << tr("Electrical Penetration Signal (*.epg)")
-          << tr("PROBE/Stylet+a Acquisition Data (*.D0*)")
-          << tr("ASCII (*.dat)");
-
-	QString filePath = QFileDialog::getOpenFileName(this, tr("Open File"),
-                                                    settings.value(LastLocationVisitedKey, QDir::homePath()).toString(),
-                                                    filters.join(";;"));
-	if (filePath.isEmpty()) return;
-	settings.setValue(LastLocationVisitedKey, QFileInfo(filePath).path());
-
-  bool loadRelatedFiles = true;
-  if (EPSignalReader::isFilePathNumbered(filePath)) {
-    int result = QMessageBox::warning(this, tr("AutoEPG ~ Opening a file"),
-                                      tr("You are opening a file that appears to be part of a larger recording.\n\n"
-                                         "Do you want to load existing files that belongs to the same recording as well?"),
-                                      QMessageBox::Yes | QMessageBox::No,
-                                      QMessageBox::Yes);
-    loadRelatedFiles = result == QMessageBox::Yes;
-  }
-
-  EPSignalReader::dispatchReader(filePath, this, SLOT(readingDidEnd(bool,QObject*,QString)), loadRelatedFiles);
+  EPSignalReader::dispatchReader(
+    filePaths,
+    this, SLOT(readingDidEnd(bool,QObject*,QString)));
 }
 
 void MainWindow::navWidgetVisibilityChanged(bool isVisible)
@@ -242,11 +225,17 @@ void MainWindow::navWidgetVisibilityChanged(bool isVisible)
 
 void MainWindow::readingDidEnd(bool success, QObject *signal, QString msg)
 {
-	if (success) {
-		EPSignalsController::pushSignal((EPSignal *)signal);
-	} else
-        QMessageBox::warning(this, "Reading error", msg);
-
+  if (success) {
+    EPSignalsController::pushSignal((EPSignal *)signal);
+  } else {
+    QMessageBox box(this);
+    box.setIcon(QMessageBox::Warning);
+    box.setWindowTitle("Reading error");
+    box.setText("Failed to read one or more files.");
+    box.setInformativeText(msg);
+    box.setStandardButtons(QMessageBox::Ok);
+    box.exec();
+  }
 }
 
 void MainWindow::removeFocusedSegmentAction()

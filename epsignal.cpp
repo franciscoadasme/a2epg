@@ -6,7 +6,7 @@ EPSignal::EPSignal(QString filepath, int id, QObject *parent) :
 	QObject(parent),
 	_id(id)
 {
-  QFileInfo fileInfo(filepath);
+  APFileInfo fileInfo(filepath);
   _fileInfos << fileInfo;
   _fileType = deriveFileType(fileInfo);
 	_profile = new EPSProfile(this);
@@ -28,12 +28,22 @@ QString EPSignal::comments()
 	return _comments;
 }
 
-QFileInfo EPSignal::fileInfo()
+EPSignal::FileType EPSignal::deriveFileType(APFileInfo fileInfo) {
+  if (fileInfo.suffix() == "epg") return EPSignal::EPG;
+  if (fileInfo.suffix() == "dat") return EPSignal::Dat;
+
+  static QRegExp rx("((.+)?\\.)?D0\\d");
+  if (rx.exactMatch(fileInfo.fileName())) return EPSignal::Acquisition;
+
+  return EPSignal::Unknown;
+}
+
+APFileInfo EPSignal::fileInfo()
 {
   return _fileInfos.first();
 }
 
-QList<QFileInfo> EPSignal::fileInfos()
+QList<APFileInfo> EPSignal::fileInfos()
 {
   return _fileInfos;
 }
@@ -137,7 +147,7 @@ void EPSignal::setChanged(bool changed)
 	emit signalDidChanged(changed);
 }
 
-void EPSignal::setFileInfo(QFileInfo fileInfo)
+void EPSignal::setFileInfo(APFileInfo fileInfo)
 {
   _fileInfos.clear();
   _fileInfos << fileInfo;
@@ -146,7 +156,7 @@ void EPSignal::setFileInfo(QFileInfo fileInfo)
 
 void EPSignal::appendFilePath(QString filePath)
 {
-  QFileInfo fileInfo(filePath);
+  APFileInfo fileInfo(filePath);
   if (!fileInfos().contains(fileInfo)) {
     _fileInfos << fileInfo;
     emit fileInfoDidChange();

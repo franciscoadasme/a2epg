@@ -3,7 +3,9 @@
 
 #include "apworker.h"
 #include "epsignal.h"
-#include <QXmlStreamWriter>
+#include "apfileinfo.h"
+
+class QXmlStreamWriter;
 
 class EPSignalWriter : public APWorker
 {	
@@ -28,9 +30,9 @@ protected:
 
 private:
 	EPSignal *_epsignal;
-	QFileInfo _fileInfo;
+  APFileInfo _fileInfo;
 	int _options;
-    QXmlStreamWriter *xmlWriter;
+  QXmlStreamWriter *xmlWriter;
 
 	QFile *createFile(QString filePath);
 
