@@ -75,6 +75,9 @@ void MainWindow::about()
                        " <strong>Claudio C. Ramirez</strong> from Instituto de Biolog&iacute;a Vegetal y Biotecnolog&iacute;a"
                        " (<a href=\"http://biologia.utalca.cl\"><abrr>IBVB</abbr></a>), Universidad de Talca, Chile.</p>"
 
+                       "<p>We also gratefully acknowledge the important contribution of Josselyn Salinas, Universidad de Talca,"
+                       " to the testing and quality assurance of this software and its underlying scan engines.</p>"
+
                        "<small>This copy can be distributed freely for research and/or academic purposes."
                        " Any kind of commercial use is not intented by the developers.</small>").arg(AP_VERSION).arg(AP_BUILD).arg(AP_BUILD_DATE);
   QMessageBox::about(this, "AutoEPG", message);
