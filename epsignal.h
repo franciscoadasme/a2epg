@@ -16,6 +16,7 @@ class EPSignal : public QObject
 
 public:
 	explicit EPSignal(QString filepath, int id = APNotFound, QObject *parent = 0);
+  explicit EPSignal(EPSignal &signal);
 
   enum FileType {
     EPG,

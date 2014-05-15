@@ -18,6 +18,34 @@ EPSignal::EPSignal(QString filepath, int id, QObject *parent) :
 	_maximum = -APInfinite;
 }
 
+EPSignal::EPSignal(EPSignal &signal) : QObject(0)
+{
+  _id = signal.id();
+  _name = QString(signal.name());
+  _comments = QString(signal.comments());
+
+  foreach (APFileInfo fileInfo, signal.fileInfos()) {
+    appendFilePath(fileInfo.filePath());
+  }
+  _fileType = deriveFileType(fileInfo());
+
+  foreach (float point, signal.points()) {
+    pushPoint(point);
+  }
+
+  _profile = new EPSProfile(this);
+  foreach(EPSegment *segment, signal.profile()->segmentsOfType(All)) {
+    profile()->addSegment(segment->type()->id(), segment->start(),
+                          segment->end(), QString(segment->comments()), true);
+  }
+
+  _changed = false;
+  connect(_profile, SIGNAL(segmentsDidChange()), SLOT(profileDidChanged()));
+
+  _minimum = APInfinite;
+  _maximum = -APInfinite;
+}
+
 float EPSignal::amplitude()
 {
 	return fabs(maximum() - minimum());

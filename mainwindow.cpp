@@ -226,7 +226,7 @@ void MainWindow::navWidgetVisibilityChanged(bool isVisible)
 void MainWindow::readingDidEnd(bool success, QObject *signal, QString msg)
 {
   if (success) {
-    EPSignalsController::pushSignal((EPSignal *)signal);
+    EPSignalsController::pushSignal(new EPSignal(*((EPSignal *)signal)));
   } else {
     QMessageBox box(this);
     box.setIcon(QMessageBox::Warning);
