@@ -11,38 +11,44 @@ class EPSignalWriter : public APWorker
 {	
     Q_OBJECT
 public:
-	explicit EPSignalWriter(QString filepath, EPSignal *eps, int options = BasedOnExtension, QObject *parent = 0);
+    explicit EPSignalWriter(QString filepath,
+                            EPSignal *eps,
+                            int options = BasedOnExtension,
+                            QObject *parent = 0);
 
-	enum WritingFlags {
-		Epg = 1,
-		Dat = 2,
-		Csv = 4,
-		BasedOnExtension = 8
-	};
+    enum WritingFlags {
+        Epg = 1,
+        Dat = 2,
+        Csv = 4,
+        BasedOnExtension = 8
+    };
 
-	static EPSignalWriter *writer(QString filepath, EPSignal *eps, int options = BasedOnExtension);
-	static void dispatchWriter(QString filePath, EPSignal *eps,
-							   QObject *target = 0, const char *callback = 0,
-							   int options = BasedOnExtension);
+    static EPSignalWriter *writer(QString filepath,
+                                  EPSignal *eps,
+                                  int options = BasedOnExtension);
+    static void dispatchWriter(QString filePath, EPSignal *eps,
+                               QObject *target = 0,
+                               const char *callback = 0,
+                               int options = BasedOnExtension);
 
 protected:
-	void run();
+    void run();
 
 private:
-	EPSignal *_epsignal;
-  APFileInfo _fileInfo;
-	int _options;
-  QXmlStreamWriter *xmlWriter;
+    EPSignal *_epsignal;
+    APFileInfo _fileInfo;
+    int _options;
+    QXmlStreamWriter *xmlWriter;
 
-	QFile *createFile(QString filePath);
+    QFile *createFile(QString filePath);
 
-	void writeDat();
-	void writeEpg();
-	void writeCsv();
+    void writeDat();
+    void writeEpg();
+    void writeCsv();
 
-	void writeInfo();
-	void writeSegments();
-	void writeSegment(EPSegment *segment);
+    void writeInfo();
+    void writeSegments();
+    void writeSegment(EPSegment *segment);
 };
 
 #endif // EPSIGNALWRITER_H

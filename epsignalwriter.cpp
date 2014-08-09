@@ -4,118 +4,127 @@
 #include "apstatuscontroller.h"
 #include <QXmlStreamWriter>
 
-EPSignalWriter::EPSignalWriter(QString filepath, EPSignal *eps, int options, QObject *parent) :
-  APWorker(NULL, parent)
+EPSignalWriter::EPSignalWriter(QString filepath,
+                               EPSignal *eps,
+                               int options,
+                               QObject *parent) :
+    APWorker(NULL, parent)
 {
-	moveToThread(this);
+    moveToThread(this);
 
-	_epsignal = eps;
-  _fileInfo = APFileInfo(filepath);
+    _epsignal = eps;
+    _fileInfo = APFileInfo(filepath);
 
-	if (options & BasedOnExtension) {
-		if (_fileInfo.suffix() == "epg") {
-			_options = Epg;
-		} else if (_fileInfo.suffix() == "csv") {
-			_options = Csv;
-		} else if (_fileInfo.suffix() == "dat") {
-			_options = Dat;
-		}
-	} else {
-		_options = options;
-	}
+    if (options & BasedOnExtension) {
+        if (_fileInfo.suffix() == "epg") {
+            _options = Epg;
+        } else if (_fileInfo.suffix() == "csv") {
+            _options = Csv;
+        } else if (_fileInfo.suffix() == "dat") {
+            _options = Dat;
+        }
+    } else {
+        _options = options;
+    }
 }
 
-EPSignalWriter *EPSignalWriter::writer(QString filepath, EPSignal *eps, int options)
+EPSignalWriter *EPSignalWriter::writer(QString filepath,
+                                       EPSignal *eps,
+                                       int options)
 {
-	return new EPSignalWriter(filepath, eps, options);
+    return new EPSignalWriter(filepath, eps, options);
 }
 
 QFile *EPSignalWriter::createFile(QString filePath)
 {
-	QFile *file = new QFile(filePath);
+    QFile *file = new QFile(filePath);
     if (!file->open(QFile::WriteOnly/* | QFile::Text*/)) {
-		emit workDidEnd(false, NULL, tr("Can't create file at %1:\n\n%2")
-						.arg(filePath)
-						.arg(file->errorString()));
-		delete file;
-		return NULL;
-	}
+        emit workDidEnd(false, NULL, tr("Can't create file at %1:\n\n%2")
+                        .arg(filePath)
+                        .arg(file->errorString()));
+        delete file;
+        return NULL;
+    }
 
-	return file;
+    return file;
 }
 
-void EPSignalWriter::dispatchWriter(QString filePath, EPSignal *eps, QObject *target, const char *callback, int options)
+void EPSignalWriter::dispatchWriter(QString filePath,
+                                    EPSignal *eps,
+                                    QObject *target,
+                                    const char *callback,
+                                    int options)
 {
-	if (filePath.isEmpty()) return;
+    if (filePath.isEmpty()) return;
 
-	EPSignalWriter *writer = EPSignalWriter::writer(filePath, eps, options);
-	APStatusController::bindToWorker(writer);
-	connect(writer, SIGNAL(workDidEnd(bool, QObject*, QString)),
-			target, callback);
-	writer->start();
+    EPSignalWriter *writer = EPSignalWriter::writer(filePath, eps, options);
+    APStatusController::bindToWorker(writer);
+    connect(writer, SIGNAL(workDidEnd(bool, QObject*, QString)),
+            target, callback);
+    writer->start();
 }
 
 void EPSignalWriter::run()
 {
-	emit workDidBegin();
-	emit workDidBegin("Writing " + _fileInfo.fileName());
+    emit workDidBegin();
+    emit workDidBegin("Writing " + _fileInfo.fileName());
 
-	if (_options & Epg) writeEpg();
-	if (_options & Csv) writeCsv();
-	if (_options & Dat) writeDat();
+    if (_options & Epg) writeEpg();
+    if (_options & Csv) writeCsv();
+    if (_options & Dat) writeDat();
 
-	emit workDidEnd();
-	emit workDidEnd(true, _epsignal, _fileInfo.fileName() + " saved.");
+    emit workDidEnd();
+    emit workDidEnd(true, _epsignal, _fileInfo.fileName() + " saved.");
 }
 
 void EPSignalWriter::writeCsv()
 {
-  QFile *file = createFile(_fileInfo.filePath());
-  if (!file) return;
+    QFile *file = createFile(_fileInfo.filePath());
+    if (!file) return;
 
-  QTextStream stream(file);
-  stream.setRealNumberNotation(QTextStream::FixedNotation);
-  stream.setRealNumberPrecision(2);
+    QTextStream stream(file);
+    stream.setRealNumberNotation(QTextStream::FixedNotation);
+    stream.setRealNumberPrecision(2);
 
-  stream << "Type,Start,End,Elapsed" << endl;
-  foreach (EPSegment *segment, _epsignal->profile()->segmentsOfType(All)) {
-    float start = transformNumberOfPointsToSeconds(segment->start());
-    float end = transformNumberOfPointsToSeconds(segment->end());
+    stream << "Type,Start,End,Elapsed" << endl;
+    foreach (EPSegment *segment, _epsignal->profile()->segmentsOfType(All)) {
+        float start = transformNumberOfPointsToSeconds(segment->start());
+        float end = transformNumberOfPointsToSeconds(segment->end());
 
-    stream << segment->type()->name()
-           << "," << start
-           << "," << end
-           << "," << end - start
-           << endl;
-  }
+        stream << segment->type()->name()
+               << "," << start
+               << "," << end
+               << "," << end - start
+               << endl;
+    }
 
-  file->close();
+    file->close();
 }
 
 void EPSignalWriter::writeDat()
 {
-	QFile *file = createFile(_fileInfo.filePath().replace(".epg", ".dat"));
-	if (!file) return;
+    QFile *file = createFile(_fileInfo.filePath().replace(".epg", ".dat"));
+    if (!file) return;
 
-	QTextStream stream(file);
-	QList<float> points = _epsignal->points();
+    QTextStream stream(file);
+    QList<float> points = _epsignal->points();
 
-	emit workLengthDidChange(points.length());
+    emit workLengthDidChange(points.length());
 
-	int pointsInOnePercent = points.length() / 100.0;
-	for (int i = 0; i < points.length(); i++) {
-    stream << points[i] << "\n";
+    int pointsInOnePercent = points.length() / 100.0;
+    for (int i = 0; i < points.length(); i++) {
+        stream << points[i] << "\n";
 
-		if (i % pointsInOnePercent == 0)
-			emit progressDidChange(i);
-	}
+        if (i % pointsInOnePercent == 0)
+            emit progressDidChange(i);
+    }
 
-	file->close();
+    file->close();
 }
 
 void EPSignalWriter::writeEpg()
 {
-	_epsignal->setFileInfo(_fileInfo);
+    _epsignal->setFileInfo(_fileInfo);
 
     QString header;
     xmlWriter = new QXmlStreamWriter(&header);
@@ -125,8 +134,8 @@ void EPSignalWriter::writeEpg()
     xmlWriter->writeStartElement("epsignal");
     xmlWriter->writeAttribute("version", "1.0");
 
-	writeInfo();
-	writeSegments();
+    writeInfo();
+    writeSegments();
 
     xmlWriter->writeEndElement();
     xmlWriter->writeEndDocument();
@@ -140,7 +149,7 @@ void EPSignalWriter::writeEpg()
         out << p;
     }
 
-	file->close();
+    file->close();
 }
 
 void EPSignalWriter::writeInfo()
@@ -149,7 +158,8 @@ void EPSignalWriter::writeInfo()
 
     xmlWriter->writeTextElement("name", _epsignal->name());
     xmlWriter->writeTextElement("comments", _epsignal->comments());
-    xmlWriter->writeTextElement("length", QString::number(_epsignal->numberOfPoints()));
+    xmlWriter->writeTextElement("length",
+                                QString::number(_epsignal->numberOfPoints()));
 
     xmlWriter->writeEndElement();
 }
@@ -168,14 +178,16 @@ void EPSignalWriter::writeSegment(EPSegment *segment)
 
 void EPSignalWriter::writeSegments()
 {
-	if (_epsignal->profile()->isEmpty())
-		return;
+    if (_epsignal->profile()->isEmpty())
+        return;
 
     xmlWriter->writeStartElement("segments");
-    xmlWriter->writeAttribute("count", QString::number(_epsignal->profile()->numberOfSegmentsOfType(All)));
+    xmlWriter->writeAttribute("count",
+                              QString::number(_epsignal->profile()
+                                              ->numberOfSegmentsOfType(All)));
 
-	foreach (EPSegment *segment, _epsignal->profile()->segmentsOfType(All))
-		writeSegment(segment);
+    foreach (EPSegment *segment, _epsignal->profile()->segmentsOfType(All))
+        writeSegment(segment);
 
     xmlWriter->writeEndElement();
 }

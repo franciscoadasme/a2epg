@@ -8,7 +8,7 @@
 #include "APGlobals.h"
 
 namespace Ui {
-    class APSeekerPickerDialog;
+class APSeekerPickerDialog;
 }
 
 class APSeekerPickerDialog : public QDialog
@@ -19,16 +19,16 @@ public:
     explicit APSeekerPickerDialog(QWidget *parent = 0);
     ~APSeekerPickerDialog();
 
-	QList<SegmentType> selectedTypes();
+    QList<SegmentType> selectedTypes();
 
 private slots:
-	void on_buttonBox_clicked(QAbstractButton *button);
+    void on_buttonBox_clicked(QAbstractButton *button);
 
 private:
     Ui::APSeekerPickerDialog *ui;
 
-	QMap<SegmentType, QCheckBox *> checkBoxs;
-	void accept();
+    QMap<SegmentType, QCheckBox *> checkBoxs;
+    void accept();
 };
 
 #endif // APSEEKERPICKERDIALOG_H

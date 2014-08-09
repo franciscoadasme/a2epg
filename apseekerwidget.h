@@ -10,52 +10,53 @@
 #include "apseeker.h"
 
 namespace Ui {
-	class APSeekerWidget;
+class APSeekerWidget;
 }
 
 class APSeekerWidget : public QWidget
 {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	explicit APSeekerWidget(QWidget *parent = 0);
-	~APSeekerWidget();
+    explicit APSeekerWidget(QWidget *parent = 0);
+    ~APSeekerWidget();
 
-	static void dispatchSeekersForTypes(QList<SegmentType> types, bool shouldFillGaps);
-	static bool isRunning() { return _running; }
+    static void dispatchSeekersForTypes(QList<SegmentType> types,
+                                        bool shouldFillGaps);
+    static bool isRunning() { return _running; }
 
 public slots:
-	void seekerDidThrowMessage(QString msg);
-	void seekerDidEnd(bool, QObject *, QString msg);
-	void seekerProgressDidChange(int);
+    void seekerDidThrowMessage(QString msg);
+    void seekerDidEnd(bool, QObject *, QString msg);
+    void seekerProgressDidChange(int);
 
 signals:
-	void progressDidChange(int);
+    void progressDidChange(int);
 
 protected:
-	void showEvent(QShowEvent *event);
-	void closeEvent(QCloseEvent *event);
+    void showEvent(QShowEvent *event);
+    void closeEvent(QCloseEvent *event);
 
 private:
-	Ui::APSeekerWidget *ui;
+    Ui::APSeekerWidget *ui;
 
-	QMap<SegmentType, APProgressBar *> _progressBars;
-	QMap<SegmentType, APSeeker *> _seekers;
-	QMap<SegmentType, QToolButton *> _stopButtons;
-	QMap<SegmentType, QLabel *> _labels;
+    QMap<SegmentType, APProgressBar *> _progressBars;
+    QMap<SegmentType, APSeeker *> _seekers;
+    QMap<SegmentType, QToolButton *> _stopButtons;
+    QMap<SegmentType, QLabel *> _labels;
 
-	int _globalProgress;
+    int _globalProgress;
     QList<SegmentType> _segmentTypesToSeekFor;
     APSeeker *_activeSeeker;
-	bool fillGaps;
+    bool fillGaps;
     bool _canceled;
-	static bool _running;
+    static bool _running;
 
-	QTime t;
+    QTime t;
 
-	void stopAll();
-	void beforeClosing();
-	void showInfoMessage();
+    void stopAll();
+    void beforeClosing();
+    void showInfoMessage();
     static QList<SegmentType> defaultOrder();
     static QList<SegmentType> sortedTypes(QList<SegmentType> types);
     APSeeker *nextSeeker();

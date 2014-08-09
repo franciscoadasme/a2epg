@@ -7,14 +7,14 @@ class APNpSeeker : public APSeeker
 {
     Q_OBJECT
 public:
-	explicit APNpSeeker(QObject *object, QObject *parent = 0);
+    explicit APNpSeeker(QObject *object, QObject *parent = 0);
 
 private:
-	SegmentType type();
-	void loadDefaults();
-	void seek();
+    SegmentType type();
+    void loadDefaults();
+    void seek();
 
-	void findLowSlopeDeviations(QList<float> indices);
+    void findLowSlopeDeviations(QList<float> indices);
 };
 
 #endif // APNPSEEKER_H

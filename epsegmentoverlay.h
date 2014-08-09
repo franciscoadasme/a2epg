@@ -10,7 +10,7 @@ class EPSegmentOverlay : public QWidget
 {
     Q_OBJECT
 public:
-	explicit EPSegmentOverlay(QWidget *parent = 0);
+    explicit EPSegmentOverlay(QWidget *parent = 0);
 
 signals:
 
@@ -19,10 +19,10 @@ public slots:
     void forceToUpdateGeometry();
 
 protected:
-	void paintEvent(QPaintEvent *);
+    void paintEvent(QPaintEvent *);
 
 private:
-	EPSegment *_segment;
+    EPSegment *_segment;
 };
 
 #endif // EPSEGMENTOVERLAY_H

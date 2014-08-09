@@ -7,21 +7,21 @@ class APWorker : public QThread
 {
     Q_OBJECT
 public:
-	explicit APWorker(QObject *object, QObject *parent = 0);
+    explicit APWorker(QObject *object, QObject *parent = 0);
 
-	QObject *object();
+    QObject *object();
 
 signals:
-	void workLengthDidChange(int);
-	void workDidBegin();
-	void workDidBegin(QString);
-  void workDidEnd();
-  void workDidEnd(bool, QObject *, QString);
-	void workThrowsMessage(QString);
-  void progressDidChange(int);
+    void workLengthDidChange(int);
+    void workDidBegin();
+    void workDidBegin(QString);
+    void workDidEnd();
+    void workDidEnd(bool, QObject *, QString);
+    void workThrowsMessage(QString);
+    void progressDidChange(int);
 
 private:
-	QObject *_object;
+    QObject *_object;
 
 };
 

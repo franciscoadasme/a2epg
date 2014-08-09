@@ -31,95 +31,99 @@ void APEditHandler::beginGroup()
 void APEditHandler::endGroup()
 {
     isGrouped = false;
-	history << QString(tmp.join(ActionSeparator));
+    history << QString(tmp.join(ActionSeparator));
     tmp.clear();
 
-	current++;
+    current++;
 
-	emit redoLimitReached(current == history.count() - 1);
-	emit undoLimitReached(current < 0);
+    emit redoLimitReached(current == history.count() - 1);
+    emit undoLimitReached(current < 0);
 
-	_print("endGroup");
+    _print("endGroup");
 }
 
 bool APEditHandler::hasReachedRedoLimit()
 {
-	return current == history.count() - 1;
+    return current == history.count() - 1;
 }
 
 bool APEditHandler::hasReachedUndoLimit()
 {
-	return current < 0;
+    return current < 0;
 }
 
 void APEditHandler::move(Direction direction)
 {
-	if (direction == Forward) current++;
+    if (direction == Forward) current++;
 
-	QString joinedActions = history[current];
-	QStringList actions = joinedActions.split(ActionSeparator);
+    QString joinedActions = history[current];
+    QStringList actions = joinedActions.split(ActionSeparator);
 
     foreach (QString serializedAction, actions) {
         QStringList tokens = serializedAction.split(InfoSeparator);
         EditAction action = actionFromString(tokens.first());
         QString info = tokens.last();
 
-		EPSegment *segment;
+        EPSegment *segment;
 
         switch (action) {
         case Create: // info is just a serialized segment
-		case Remove: {
-			segment = EPSegment::unserialize(info);
-			if ((direction == Forward && action == Create)
-					|| (direction == Backward && action == Remove))
+        case Remove: {
+            segment = EPSegment::unserialize(info);
+            if ((direction == Forward && action == Create)
+                || (direction == Backward && action == Remove))
                 profile->addSegment(segment, true);
             else
                 profile->removeSegmentWithId(segment->id(), true);
-			break;
-		}
+            break;
+        }
 
-		case Update: { // info has format: id:property=prev-next
+        case Update: { // info has format: id:property=prev-next
             QStringList idAndChange = info.split(":");
             int id = idAndChange.first().toInt();
 
-			segment = profile->segmentWithId(id);
-			if (!segment) qCritical("APEditHandler::move() => no segment found for requested id %i", id);
+            segment = profile->segmentWithId(id);
+            if (!segment) {
+                qCritical("APEditHandler::move() => no segment found for "
+                          "requested id %i",
+                          id);
+            }
             segment->pushSerializedChange(idAndChange.last(), direction);
             break;
-		}
-		case None: break;
         }
-	}
+        case None: break;
+        }
+    }
 
-	if (direction == Backward) current--;
+    if (direction == Backward) current--;
 
     profile->forceEmitOfSegmentsDidChange();
-	// FIX to force overlay to update
-	MainWindow::instance()->epsignalWidget()->overlay()->forceToUpdateGeometry();
+    // FIX to force overlay to update
+    MainWindow::instance()->epsignalWidget()->overlay()->forceToUpdateGeometry();
 
-	emit redoLimitReached(current == history.count() - 1);
-	emit undoLimitReached(current < 0);
+    emit redoLimitReached(current == history.count() - 1);
+    emit undoLimitReached(current < 0);
 
-	_print("move");
+    _print("move");
 }
 
 void APEditHandler::redo()
 {
-	move(Forward);
+    move(Forward);
 }
 
 APEditHandler *APEditHandler::saveAction(EditAction action, QString info)
 {
-	/* when adding a new action, we need to erase newer actions */
-	int countOfActionsToRemove = history.count() - 1 - current;
-	for (int i = 0; i < countOfActionsToRemove; i++)
-		history.removeLast();
+    /* when adding a new action, we need to erase newer actions */
+    int countOfActionsToRemove = history.count() - 1 - current;
+    for (int i = 0; i < countOfActionsToRemove; i++)
+        history.removeLast();
 
-	tmp << stringWithAction(action) + InfoSeparator + info;
+    tmp << stringWithAction(action) + InfoSeparator + info;
 
     /* when grouped, wait to endGroup call... force save otherwise */
     if (!isGrouped)
-		endGroup();
+        endGroup();
 
     return this;
 }
@@ -136,13 +140,13 @@ QString APEditHandler::stringWithAction(EditAction action)
 
 void APEditHandler::undo()
 {
-	move(Backward);
+    move(Backward);
 }
 
 void APEditHandler::_print(QString methodname)
 {
-	QStringList list;
-	for (int i = 0; i < history.count(); i++)
-		list << (current == i ? ">" : "") + history.at(i);
-	qDebug() << "APEditHandler::" + methodname + "() =>" << list << current;
+    QStringList list;
+    for (int i = 0; i < history.count(); i++)
+        list << (current == i ? ">" : "") + history.at(i);
+    qDebug() << "APEditHandler::" + methodname + "() =>" << list << current;
 }

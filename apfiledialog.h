@@ -5,16 +5,17 @@
 
 class APFileDialog : public QFileDialog
 {
-  Q_OBJECT
+    Q_OBJECT
 public:
-  static QList<QStringList> getGroupedOpenFileNames(
-    QWidget *parent = 0,
-    QString const & caption = QString());
-  static QString lastVisitedLocation();
+    static QList<QStringList> getGroupedOpenFileNames(
+            QWidget *parent = 0,
+            QString const & caption = QString());
+    static QString lastVisitedLocation();
 
 private:
-  static bool askWhetherShouldLoadRelatedFilesOf(QStringList const & filePaths);
-  static QString openFileFilterPatterns();
+    static bool askWhetherShouldLoadRelatedFilesOf(
+            QStringList const & filePaths);
+    static QString openFileFilterPatterns();
 };
 
 #endif // APFILEDIALOG_H

@@ -11,38 +11,39 @@ class APController : public QAbstractTableModel
 public:
     explicit APController(QObject *parent = 0);
 
-	QAbstractItemModel *arrangedObjects();
-	void setSelectionModel(QItemSelectionModel *model);
-	QObject *selectedObject();
-	QObject *currentObject();
+    QAbstractItemModel *arrangedObjects();
+    void setSelectionModel(QItemSelectionModel *model);
+    QObject *selectedObject();
+    QObject *currentObject();
 
-	int rowCount(const QModelIndex &) const;
+    int rowCount(const QModelIndex &) const;
 
-	void addObject(QObject *object);
-	QObject *objectAt(int index) const;
-	int indexOfObject(QObject *object) const;
-	int count() const;
-	QObject *take();
+    void addObject(QObject *object);
+    QObject *objectAt(int index) const;
+    int indexOfObject(QObject *object) const;
+    int count() const;
+    QObject *take();
 
 signals:
-	void selectionDidChanged(QObject *);
-	void activeObjectDidChanged(QObject *);
+    void selectionDidChanged(QObject *);
+    void activeObjectDidChanged(QObject *);
 
 public slots:
-	void activeIndexDidChange(QModelIndex active);
-	void setSelectedObject(QObject *object);
-	void setCurrentObject(QObject *object);
-	void remove();
+    void activeIndexDidChange(QModelIndex active);
+    void setSelectedObject(QObject *object);
+    void setCurrentObject(QObject *object);
+    void remove();
 
 private slots:
-	void itemSelectionDidChange(const QItemSelection & selected, const QItemSelection & deselected);
+    void itemSelectionDidChange(const QItemSelection & selected,
+                                const QItemSelection & deselected);
 
 protected:
-	QList<QObject *> objects;
-	QItemSelectionModel *selectionModel;
+    QList<QObject *> objects;
+    QItemSelectionModel *selectionModel;
 
 private:
-	QSortFilterProxyModel *proxyModel;
+    QSortFilterProxyModel *proxyModel;
 };
 
 #endif // APCONTROLLER_H

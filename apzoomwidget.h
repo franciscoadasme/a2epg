@@ -5,7 +5,7 @@
 #include <QPropertyAnimation>
 
 namespace Ui {
-    class APZoomWidget;
+class APZoomWidget;
 }
 
 class APZoomWidget : public QWidget
@@ -16,26 +16,26 @@ public:
     explicit APZoomWidget(QWidget *parent = 0);
     ~APZoomWidget();
 
-	void slideIn();
-	void slideOut();
-	bool isPointAtHotspot(QPoint point);
+    void slideIn();
+    void slideOut();
+    bool isPointAtHotspot(QPoint point);
 
 public slots:
-	void updateLocation();
-	void updateUi();
-	void enableButtonForOrientation(Qt::Orientation);
-	void disableButtonForOrientation(Qt::Orientation);
-	void animationDidEnd();
+    void updateLocation();
+    void updateUi();
+    void enableButtonForOrientation(Qt::Orientation);
+    void disableButtonForOrientation(Qt::Orientation);
+    void animationDidEnd();
 
 protected:
-	void paintEvent(QPaintEvent *);
+    void paintEvent(QPaintEvent *);
 
 private:
     Ui::APZoomWidget *ui;
-	QPropertyAnimation *_animator;
-	QRect _hotspot;
+    QPropertyAnimation *_animator;
+    QRect _hotspot;
 
-	void setUpConnections();
+    void setUpConnections();
 };
 
 #endif // APZOOMWIDGET_H

@@ -8,13 +8,13 @@ class APProgressBar : public QProgressBar
 {
     Q_OBJECT
 public:
-	explicit APProgressBar(QWidget *parent = 0);
+    explicit APProgressBar(QWidget *parent = 0);
 
-	void bindToWorker(APWorker *worker);
+    void bindToWorker(APWorker *worker);
 
 public slots:
-	void updateMaximum(int maximum);
-	void workDidEnd();
+    void updateMaximum(int maximum);
+    void workDidEnd();
 };
 
 #endif // APPROGRESSBAR_H

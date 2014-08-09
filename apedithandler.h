@@ -26,9 +26,9 @@ public:
     void endGroup();
     APEditHandler *saveAction(EditAction action, QString info);
 
-	bool hasReachedUndoLimit();
-	bool hasReachedRedoLimit();
-    
+    bool hasReachedUndoLimit();
+    bool hasReachedRedoLimit();
+
 signals:
     void undoLimitReached(bool);
     void redoLimitReached(bool);
@@ -38,7 +38,7 @@ public slots:
     void redo();
 
 private:
-	QStringList history;
+    QStringList history;
     EPSProfile *profile;
     QStringList tmp;
     bool isGrouped;
@@ -48,7 +48,7 @@ private:
     EditAction actionFromString(QString action);
     void move(Direction direction);
 
-	void _print(QString methodname);
+    void _print(QString methodname);
 };
 
 #endif // APEDITHANDLER_H
