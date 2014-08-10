@@ -45,8 +45,8 @@ EPSignal::EPSignal(EPSignal &signal) : QObject(0)
     _changed = false;
     connect(_profile, SIGNAL(segmentsDidChange()), SLOT(profileDidChanged()));
 
-    _minimum = APInfinite;
-    _maximum = -APInfinite;
+    _minimum = signal.minimum();
+    _maximum = signal.maximum();
 }
 
 float EPSignal::amplitude()
@@ -151,10 +151,11 @@ void EPSignal::pushPoint(float point)
 {
     _points.append(point);
 
-    if (point > _maximum)
+    if (point > _maximum) {
         _maximum = point;
-    else if (point < _minimum)
+    } else if (point < _minimum) {
         _minimum = point;
+    }
 }
 
 void EPSignal::setComments(QString aComment)
