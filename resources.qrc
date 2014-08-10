@@ -17,5 +17,6 @@
         <file>resources/redo.png</file>
         <file>resources/undo.png</file>
         <file>resources/zoom.png</file>
+        <file>resources/about.html</file>
     </qresource>
 </RCC>

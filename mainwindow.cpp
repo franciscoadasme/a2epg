@@ -67,29 +67,18 @@ MainWindow *MainWindow::instance()
 
 void MainWindow::about()
 {
-    /*
-     *
-     *
-     * MOVE TO A HTML FILE
-     *
-     *
-     */
-    QString message = tr("<p><strong style=\"font-size: 18px; line-height: 1em;\">AutoEPG %1</strong><br>"
-                         "Automatic Processing of Electrical Penetration Graphs<br>"
-                         "<small style=\"color: #666;\">Build %2 ~ %3</small></p>"
-
-                         "<p>This application was developed by <a href=\"http://about.me/franciscoadasme\">Francisco Adasme</a>"
-                         " and <a href=\"http://about.me/camila.munoz\">Camila Mu&ntilde;oz</a>"
-                         " from Centre for Bioinformatics and Molecular Simulations"
-                         " (<a href=\"http://cbsm.utalca.cl\"><abrr>CBSM</abbr></a>) in association with"
-                         " <strong>Claudio C. Ramirez</strong> from Instituto de Biolog&iacute;a Vegetal y Biotecnolog&iacute;a"
-                         " (<a href=\"http://biologia.utalca.cl\"><abrr>IBVB</abbr></a>), Universidad de Talca, Chile.</p>"
-
-                         "<p>We also gratefully acknowledge the important contribution of Josselyn Salinas, Universidad de Talca,"
-                         " to the testing and quality assurance of this software and its underlying scan engines.</p>"
-
-                         "<small>This copy can be distributed freely for research and/or academic purposes."
-                         " Any kind of commercial use is not intented by the developers.</small>").arg(AP_VERSION).arg(AP_BUILD).arg(AP_BUILD_DATE);
+    static QString message;
+    if (message.isEmpty()) {
+        QFile aboutFile(":/resources/about.html");
+        Q_ASSERT_X(aboutFile.open(QIODevice::ReadOnly | QIODevice::Text),
+                   "mainwindow's about",
+                   qPrintable(aboutFile.errorString()));
+        QTextStream in(&aboutFile);
+        message.append(in.readAll().arg(AP_VERSION)
+                                   .arg(AP_BUILD)
+                                   .arg(AP_BUILD_DATE));
+        aboutFile.close();
+    }
     QMessageBox::about(this, "AutoEPG", message);
 }
 
