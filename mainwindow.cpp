@@ -70,9 +70,15 @@ void MainWindow::about()
     static QString message;
     if (message.isEmpty()) {
         QFile aboutFile(":/resources/about.html");
-        Q_ASSERT_X(aboutFile.open(QIODevice::ReadOnly | QIODevice::Text),
-                   "mainwindow's about",
-                   qPrintable(aboutFile.errorString()));
+        if(!aboutFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
+            QMessageBox box(this);
+            box.setWindowTitle("AutoEPG");
+            box.setIcon(QMessageBox::Critical);
+            box.setText(tr("Couldn't load file."));
+            box.setInformativeText(aboutFile.errorString());
+            box.exec();
+            return;
+        }
         QTextStream in(&aboutFile);
         message.append(in.readAll().arg(AP_VERSION)
                                    .arg(AP_BUILD)
