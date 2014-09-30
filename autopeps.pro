@@ -6,10 +6,11 @@
 
 QT       += core gui widgets
 
-TARGET = autoepg
+TARGET = AutoEPG
 TEMPLATE = app
 
 #QMAKE_MAC_SDK = /Developer/SDKs/MacOSX10.6.sdk
+QMAKE_MAC_SDK = macosx10.9
 
 SOURCES += main.cpp\
         mainwindow.cpp \
