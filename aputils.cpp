@@ -274,15 +274,15 @@ QString APUtils::runSaveDialog(int extensionFlags, QString defaultExtension)
 {
     QStringList filters, extensions;
     if (extensionFlags & EPSignalWriter::Epg) {
-        filters << "Electrical penetration signal (*.epg)";
+        filters << "Electrical Penetration Graph (*.epg)";
         extensions << "epg";
     }
     if (extensionFlags & EPSignalWriter::Dat) {
-        filters << ".dat (*.dat)";
+        filters << "Raw data (*.dat)";
         extensions << "dat";
     }
     if (extensionFlags & EPSignalWriter::Csv) {
-        filters << "Comma-separated values (*.csv)";
+        filters << "Mark file (*.csv)";
         extensions << "csv";
     }
 

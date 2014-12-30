@@ -71,7 +71,7 @@ QString APFileDialog::openFileFilterPatterns()
         filters << tr("All Supported files (*.epg *.D0* *.dat)")
                 << tr("Electrical Penetration Graph (*.epg)")
                 << tr("PROBE/Stylet+a Acquisition Data (*.D0*)")
-                << tr("ASCII (*.dat)");
+                << tr("Raw data/ASCII (*.dat)");
         filterPatterns = filters.join(";;");
     }
     return filterPatterns;
