@@ -93,7 +93,7 @@ bool EPSignalsController::handleUnsavedSignal(EPSignal *signal)
 {
     QMessageBox msgBox(MainWindow::instance());
     msgBox.setIcon(QMessageBox::Question);
-    msgBox.setWindowTitle("AutoEPG");
+    msgBox.setWindowTitle("A2EPG");
     msgBox.setText(signal->name() + " signal has been modified.");
     msgBox.setInformativeText("Do you want to save your changes?");
     msgBox.setStandardButtons(QMessageBox::Save

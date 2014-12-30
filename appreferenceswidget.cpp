@@ -100,7 +100,7 @@ void APPreferencesWidget::on_removeSegmentTypeButton_clicked()
     if (APSegmentTypesController::shared()->removable()) {
         APSegmentTypesController::shared()->remove();
     } else
-        QMessageBox::warning(this, "AutoEPG",
+        QMessageBox::warning(this, "A2EPG",
                              "<strong>An error occurs while removing a segment "
                              "type.</strong><br /><br />"
                              "Either there is no selection or the segment type "
@@ -111,14 +111,14 @@ void APPreferencesWidget::on_removeSegmentTypeButton_clicked()
 void APPreferencesWidget::on_createSegmentTypeButton_clicked()
 {
     bool ok;
-    QString text = QInputDialog::getText(this, tr("AutoEPG ~ New segment type"),
+    QString text = QInputDialog::getText(this, tr("A2EPG ~ New segment type"),
                                          tr("Segment type name (3 letters):"),
                                          QLineEdit::Normal,
                                          "", &ok);
     if (!ok || text.isEmpty()) return;
 
     if (!QRegExp("[a-zA-Z0-9]*").exactMatch(text)) {
-        int ret = QMessageBox::warning(this, "AutoEPG",
+        int ret = QMessageBox::warning(this, "A2EPG",
                                        "<strong>Invalid non-alphanumeric "
                                        "characters were found.</strong><br />"
                                        "They will be removed automatically."
@@ -133,7 +133,7 @@ void APPreferencesWidget::on_createSegmentTypeButton_clicked()
     }
 
     if (text.length() > 3) {
-        QMessageBox::warning(this, "AutoEPG",
+        QMessageBox::warning(this, "A2EPG",
                              "<strong>Invalid name found.</strong><br /><br />"
                              "Entered name exceeds the allowed length.");
         return;

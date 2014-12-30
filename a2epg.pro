@@ -6,11 +6,11 @@
 
 QT       += core gui widgets
 
-TARGET = AutoEPG
+TARGET = A2EPG
 TEMPLATE = app
 
 #QMAKE_MAC_SDK = /Developer/SDKs/MacOSX10.6.sdk
-QMAKE_MAC_SDK = macosx10.9
+QMAKE_MAC_SDK = macosx10.10
 
 SOURCES += main.cpp\
         mainwindow.cpp \
@@ -101,7 +101,7 @@ FORMS    += mainwindow.ui \
 RESOURCES += \
     resources.qrc
 
-ICON = autopeps.icns
+ICON = a2epg.icns
 
 
 

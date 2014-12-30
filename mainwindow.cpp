@@ -72,7 +72,7 @@ void MainWindow::about()
         QFile aboutFile(":/resources/about.html");
         if(!aboutFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
             QMessageBox box(this);
-            box.setWindowTitle("AutoEPG");
+            box.setWindowTitle("A2EPG");
             box.setIcon(QMessageBox::Critical);
             box.setText(tr("Couldn't load file."));
             box.setInformativeText(aboutFile.errorString());
@@ -85,7 +85,8 @@ void MainWindow::about()
                                    .arg(AP_BUILD_DATE));
         aboutFile.close();
     }
-    QMessageBox::about(this, "AutoEPG", message);
+    qDebug() << message;
+    QMessageBox::about(this, "A2EPG", message);
 }
 
 void MainWindow::aboutQt()
@@ -192,7 +193,7 @@ void MainWindow::goTo()
     bool ok;
     int position = QInputDialog::getInt(
                        this,
-                       "AutoEPG ~ Go to",
+                       "A2EPG ~ Go to",
                        tr("Enter position (seconds) you want to go:\n\n"
                           "Must be between 0 and %1").arg(maximum),
                        current,
@@ -269,7 +270,7 @@ void MainWindow::removeFocusedSegmentAction()
 {
     QSettings settings;
     if (settings.value("AskWhenDeletingSegments", true).toBool()) {
-        int ret = QMessageBox::warning(this, tr("AutoEPG ~ Deleting a segment"),
+        int ret = QMessageBox::warning(this, tr("A2EPG ~ Deleting a segment"),
                                        tr("Are you sure you want to continue?.\n\n"
                                           "Note: this change cannot be undone."),
                                        QMessageBox::Ok | QMessageBox::Cancel,
@@ -297,7 +298,7 @@ void MainWindow::runChecked()
         if (typesToRun.contains(C) && (!typesToRun.contains(Pd) || !typesToRun.contains(G))) {
             int ret = QMessageBox::warning(
                           this,
-                          "AutoEPG",
+                          "A2EPG",
                           "<strong>You are about to run C seeker without Pd "
                           "and/or G contrapart.</strong><br /><br />"
                           "C search engine's known drawback is that sometimes "
@@ -321,7 +322,7 @@ void MainWindow::runSearchEngines(QList<SegmentType> typesToRun,
 {
     if (APSeekerWidget::isRunning()) {
         QMessageBox::warning(this,
-                             "AutoEPG",
+                             "A2EPG",
                              "There are seekers running already.");
         return;
     }
@@ -336,7 +337,7 @@ void MainWindow::runSearchEngines(QList<SegmentType> typesToRun,
                              "after running search engines.\n\n"
                              "Are you sure you want to continue?")
                           .arg(typeNamesToRun.join(", "));
-        int result = QMessageBox::warning(this, "AutoEPG",
+        int result = QMessageBox::warning(this, "A2EPG",
                                           message,
                                           QMessageBox::Yes | QMessageBox::No,
                                           QMessageBox::No);
@@ -368,7 +369,7 @@ void MainWindow::saveAs()
 
     if (QFileInfo(filePath).suffix() == "csv") {
         if (EPSignalsController::activeSignal()->profile()->isEmpty()) {
-            QMessageBox::warning(this, "AutoEPG",
+            QMessageBox::warning(this, "A2EPG",
                                  "You haven't added any waveform segment to "
                                  "this signal, so there is nothing to be saved.");
             return;
@@ -610,7 +611,7 @@ void MainWindow::updateSegmentLabel()
 void MainWindow::updateUIComponentsForSignal(EPSignal *signal)
 {
     QSettings settings;
-    setWindowTitle(tr("AutoEPG%1").arg(signal == NULL
+    setWindowTitle(tr("A2EPG%1").arg(signal == NULL
                                        ? ""
                                        : " ~ " + signal->fileInfo().fileName()));
 

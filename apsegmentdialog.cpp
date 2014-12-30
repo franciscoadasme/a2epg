@@ -36,7 +36,7 @@ APSegmentDialog *APSegmentDialog::instance()
 void APSegmentDialog::accept()
 {
     if (ui->typeComboBox->currentIndex() == -1) {
-        QMessageBox::warning(this, "AutoEPG",
+        QMessageBox::warning(this, "A2EPG",
                              "No segment type was selected.\n\n"
                              "Please, select one in order to continue.");
         return;
@@ -78,7 +78,7 @@ int APSegmentDialog::askAboutCollisions(EPSegment *segment,
                                         QList<EPSegment *> collidedSegments)
 {
     QMessageBox msgBox(MainWindow::instance());
-    msgBox.setWindowTitle("AutoEPG ~ Resolving collision");
+    msgBox.setWindowTitle("A2EPG ~ Resolving collision");
     msgBox.setText(tr("<strong>%1 segment collision(s) was found.</strong>")
                    .arg(collidedSegments.length()));
     msgBox.setInformativeText("<strong>Note</strong>: segment collisions will "

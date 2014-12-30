@@ -23,7 +23,7 @@
    </size>
   </property>
   <property name="windowTitle">
-   <string>AutoEPG ~ Preferences</string>
+   <string>A2EPG ~ Preferences</string>
   </property>
   <property name="windowIcon">
    <iconset resource="resources.qrc">

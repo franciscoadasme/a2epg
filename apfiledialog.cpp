@@ -12,7 +12,7 @@ bool APFileDialog::askWhetherShouldLoadRelatedFilesOf(
     foreach (QString filePath, filePaths) {
         if (APFileInfo(filePath).isNumbered()) {
             QMessageBox dialog(QApplication::activeWindow());
-            dialog.setWindowTitle(tr("AutoEPG ~ Opening files"));
+            dialog.setWindowTitle(tr("A2EPG ~ Opening files"));
             dialog.setIcon(QMessageBox::Question);
             dialog.setText(tr("One or more files appear to be part of a larger "
                               "recording."));

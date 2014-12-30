@@ -249,7 +249,7 @@ void APSeekerWidget::showInfoMessage()
     message += tr("\n\nElapsed time: %1.").arg(elapsed);
 
     QMessageBox box(this);
-    box.setWindowTitle("AutoEPG ~ Scan Results");
+    box.setWindowTitle("A2EPG ~ Scan Results");
     box.setIcon(QMessageBox::Information);
     box.setText("<strong>Scan engines have finished successfully.</strong>");
     box.setInformativeText(message);
