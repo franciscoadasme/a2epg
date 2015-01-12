@@ -85,7 +85,6 @@ void MainWindow::about()
                                    .arg(AP_BUILD_DATE));
         aboutFile.close();
     }
-    qDebug() << message;
     QMessageBox::about(this, "A2EPG", message);
 }
 
