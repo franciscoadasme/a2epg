@@ -14,3 +14,6 @@
 # Qt
 *.pro.user
 *.pro.user.*
+
+# Compilation directory
+build-a2epg-*
