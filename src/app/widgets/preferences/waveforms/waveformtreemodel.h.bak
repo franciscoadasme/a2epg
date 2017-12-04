@@ -1,0 +1,82 @@
+#ifndef EPGWAVEFORMTREEMODEL_H
+#define EPGWAVEFORMTREEMODEL_H
+
+#include <QAbstractItemModel>
+#include <QHash>
+#include <QModelIndex>
+#include <QObject>
+#include <QVariant>
+#include "storeitem.h"
+
+namespace EPG {
+class Waveform;
+class WaveformSet;
+class WaveformSetStore;
+}
+class Identifiable;
+
+class WaveformTreeModel : public QAbstractItemModel
+{
+    Q_OBJECT
+
+public:
+    explicit WaveformTreeModel(EPG::WaveformSetStore *store,
+                               QObject *parent = nullptr);
+
+    void changeCurrentSetToItemAt(const QModelIndex &index) const;
+    int columnCount(const QModelIndex &parent = QModelIndex()) const override;
+    QVariant data(const QModelIndex &index,
+                  int role = Qt::DisplayRole) const override;
+    Qt::ItemFlags flags(const QModelIndex &index) const override;
+    QVariant headerData(int section, Qt::Orientation orientation,
+                        int role = Qt::DisplayRole) const override;
+    QModelIndex index(int row, int column,
+                      const QModelIndex &parent = QModelIndex()) const override;
+    bool insertRows(int row, int count, const QModelIndex &parent) override;
+    bool isInvisibleRootItem(const QModelIndex &index) const;
+    bool isWaveformItem(const QModelIndex &index) const;
+    bool isWaveformSetItem(const QModelIndex &index) const;
+    QModelIndex parent(const QModelIndex &index) const override;
+    bool removeRows(int row, int count, const QModelIndex &parent) override;
+    int rowCount(const QModelIndex &parent = QModelIndex()) const override;
+    bool setData(const QModelIndex &index, const QVariant &value,
+                 int role) override;
+
+private:
+    enum class ItemType {
+        Root,
+        Set,
+        Waveform,
+        Unknown
+    };
+
+    QHash<uint, Identifiable *> m_items;
+    EPG::WaveformSetStore *m_store;
+    StoreItem *m_rootItem;
+
+    Identifiable *at(const QModelIndex &index) const;
+    QVariant dataForItemAt(const QModelIndex &index) const;
+    QVariant dataForObject(EPG::Waveform *waveform, int column) const;
+    QVariant dataForObject(EPG::WaveformSet *set, int column) const;
+    void deleteChildItemAt(const QModelIndex &parent, int index);
+    QString displayText(const QString &text) const;
+    QVariant decorationForItemAt(const QModelIndex &index) const;
+    QVariant decorationForObject(EPG::Waveform *waveform, int column) const;
+    QVariant decorationForObject(EPG::WaveformSet *set, int column) const;
+    QVariant editDataForItemAt(const QModelIndex &index) const;
+    QVariant editDataForObject(EPG::Waveform *waveform, int column) const;
+    QVariant editDataForObject(EPG::WaveformSet *set, int column) const;
+    QFont fontForItemAt(const QModelIndex &index) const;
+    void insertChildItemAt(const QModelIndex &parent, int index);
+    int rowHeight(const QModelIndex &index) const;
+    bool setDataForItemAt(const QModelIndex &index,
+                          const QVariant &value) const;
+    bool setDataForObject(EPG::Waveform *waveform, int column,
+                          const QVariant &value) const;
+    bool setDataForObject(EPG::WaveformSet *set, int column,
+                          const QVariant &value) const;
+    void setupItems();
+    ItemType typeOfItemAt(const QModelIndex &index) const;
+};
+
+#endif // EPGWAVEFORMTREEMODEL_H

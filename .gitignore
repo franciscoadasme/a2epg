@@ -16,4 +16,4 @@
 *.pro.user.*
 
 # Compilation directory
-build-a2epg-*
+build

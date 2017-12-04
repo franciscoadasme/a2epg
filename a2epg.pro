@@ -1,6 +1,6 @@
 #-------------------------------------------------
 #
-# Project created by QtCreator 2017-11-11T20:26:28
+# Project created by QtCreator 2017-11-16T22:36:24
 #
 #-------------------------------------------------
 
@@ -23,16 +23,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 
-SOURCES += \
-        main.cpp \
-        mainwindow.cpp \
-    models/epgrecord.cpp \
-    models/epgmark.cpp
+include($$PWD/src/lib/lib.pri)
+include($$PWD/src/app/app.pri)
 
-HEADERS += \
-        mainwindow.h \
-    models/epgrecord.h \
-    models/epgmark.h
-
-FORMS += \
-        mainwindow.ui
+DISTFILES +=

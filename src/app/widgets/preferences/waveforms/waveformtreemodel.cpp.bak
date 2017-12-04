@@ -1,0 +1,494 @@
+#include "waveformtreemodel.h"
+
+#include <QFont>
+#include <QSize>
+#include "core/epg.h"
+#include "core/identifiable.h"
+#include "utils/color.h"
+
+#define DATA_COLUMN_COUNT_TYPE 3
+#define DATA_COLUMN_COUNT_TYPE_SET 1
+#define DATA_COLUMN_ID_NAME 0
+#define DATA_COLUMN_ID_DESCRIPTION 1
+#define DATA_COLUMN_ID_COLOR 2
+#define DATA_PLACEHOLDER_NONE "<none>"
+
+using namespace EPG;
+using namespace Utils;
+
+enum DataColumn {
+    Name,
+    Description,
+    Color
+};
+
+WaveformTreeModel::WaveformTreeModel(WaveformSetStore *store, QObject *parent) :
+    QAbstractItemModel(parent),
+    m_store(store)
+{
+    setupItems();
+}
+
+Identifiable *WaveformTreeModel::at(const QModelIndex &index)
+const
+{
+    return static_cast<Identifiable *>(index.internalPointer());
+// auto iter = m_items.find(index.internalId());
+// if (iter == m_items.end())
+// return nullptr;
+// return iter.value();
+}
+
+void WaveformTreeModel::changeCurrentSetToItemAt(const QModelIndex &index) const
+{
+    if (!isWaveformSetItem(index))
+        return;
+
+    m_store->setCurrentSet(index.row());
+}
+
+int WaveformTreeModel::columnCount(const QModelIndex &parent) const
+{
+    Q_UNUSED(parent);
+    return DATA_COLUMN_COUNT_TYPE;
+}
+
+QVariant WaveformTreeModel::data(const QModelIndex &index, int role) const
+{
+    if (typeOfItemAt(index) == ItemType::Root)
+        return QVariant();
+
+    switch (role) {
+    case Qt::DisplayRole:
+        return dataForItemAt(index);
+    case Qt::EditRole:
+        return editDataForItemAt(index);
+// case Qt::SizeHintRole:
+// return QSize(0, rowHeight(index));
+    case Qt::FontRole:
+        return fontForItemAt(index);
+    case Qt::DecorationRole:
+        return decorationForItemAt(index);
+    default:
+        return QVariant();
+    }
+}
+
+QVariant WaveformTreeModel::dataForItemAt(const QModelIndex &index) const
+{
+// Identifiable *item = at(index);
+// if (item == nullptr)
+// return QVariant();
+
+// WaveformSet *set = dynamic_cast<WaveformSet *>(item);
+// if (set != nullptr)
+// return dataForObject(set, index.column());
+
+// Waveform *waveform = dynamic_cast<Waveform *>(item);
+// if (waveform != nullptr)
+// return dataForObject(waveform, index.column());
+
+// return QVariant();
+    switch (typeOfItemAt(index)) {
+    case ItemType::Set:
+        return dataForObject(
+            static_cast<WaveformSet *>(at(index)), index.column());
+    case ItemType::Waveform:
+        return dataForObject(
+            static_cast<Waveform *>(at(index)), index.column());
+    default:
+        return QVariant();
+    }
+}
+
+QVariant WaveformTreeModel::dataForObject(Waveform *waveform, int column) const
+{
+    switch (column) {
+    case DataColumn::Name:
+        return displayText(waveform->name());
+    case DataColumn::Description:
+        return displayText(waveform->description());
+    case DataColumn::Color:
+        return Color::nameForColor(waveform->color());
+    default:
+        return QVariant();
+    }
+}
+
+QVariant WaveformTreeModel::dataForObject(WaveformSet *set, int column) const
+{
+    switch (column) {
+    case DataColumn::Name:
+        return displayText(set->name());
+    default:
+        return QVariant();
+    }
+}
+
+void WaveformTreeModel::deleteChildItemAt(const QModelIndex &parent, int index)
+{
+    // waveform node (leaf) is invalid at this context
+// if (parent.parent().isValid())
+// return;
+
+// if (parent.isValid()) {
+// auto typeSet = static_cast<WaveformSet *>(at(parent));
+// m_items.remove(typeSet->at(index)->id());
+// typeSet->deleteAt(index);
+// } else {
+// m_items.remove(m_store->at(index)->id());
+// m_store->deleteAt(index);
+// }
+
+    switch (typeOfItemAt(parent)) {
+    case ItemType::Root:
+        m_items.remove(m_store->at(index)->id());
+        m_store->deleteAt(index);
+        break;
+    case ItemType::Set:
+    {
+        auto typeSet = static_cast<WaveformSet *>(at(parent));
+        m_items.remove(typeSet->at(index)->id());
+        typeSet->deleteAt(index);
+        break;
+    }
+    default:
+        break;
+    }
+}
+
+QString WaveformTreeModel::displayText(const QString &text) const
+{
+    return text.isEmpty() ? DATA_PLACEHOLDER_NONE : text;
+}
+
+QVariant WaveformTreeModel::decorationForItemAt(const QModelIndex &index) const
+{
+    switch (typeOfItemAt(index)) {
+    case ItemType::Set:
+        return decorationForObject(
+            static_cast<WaveformSet *>(at(index)), index.column());
+    case ItemType::Waveform:
+        return decorationForObject(
+            static_cast<Waveform *>(at(index)), index.column());
+    default:
+        return QVariant();
+    }
+}
+
+QVariant WaveformTreeModel::decorationForObject(Waveform *waveform,
+                                                int column) const
+{
+    switch (column) {
+    case DataColumn::Color:
+        return waveform->color();
+    default:
+        return QVariant();
+    }
+}
+
+QVariant WaveformTreeModel::decorationForObject(WaveformSet *set,
+                                                int column) const
+{
+    Q_UNUSED(column);
+    Q_UNUSED(set);
+    return QVariant();
+}
+
+QVariant WaveformTreeModel::editDataForItemAt(const QModelIndex &index) const
+{
+    switch (typeOfItemAt(index)) {
+    case ItemType::Set:
+        return editDataForObject(
+            static_cast<WaveformSet *>(at(index)), index.column());
+    case ItemType::Waveform:
+        return editDataForObject(
+            static_cast<Waveform *>(at(index)), index.column());
+    default:
+        return QVariant();
+    }
+}
+
+QVariant WaveformTreeModel::editDataForObject(Waveform *waveform,
+                                              int column) const
+{
+    switch (column) {
+    case DataColumn::Color:
+        return waveform->color();
+    default:
+        return dataForObject(waveform, column);
+    }
+}
+
+QVariant WaveformTreeModel::editDataForObject(WaveformSet *set,
+                                              int column) const
+{
+    return dataForObject(set, column);
+}
+
+QFont WaveformTreeModel::fontForItemAt(const QModelIndex &index) const
+{
+    QFont font;
+    if (typeOfItemAt(index) == ItemType::Set)
+        font.setBold(m_store->isCurrentSet(index.row()));
+
+    return font;
+}
+
+Qt::ItemFlags WaveformTreeModel::flags(const QModelIndex &index) const
+{
+    if (typeOfItemAt(index) == ItemType::Root)
+        return 0;
+
+    Qt::ItemFlags flags = QAbstractItemModel::flags(index);
+    if ((typeOfItemAt(index) == ItemType::Set)
+        && (index.column() != DataColumn::Name))
+        return flags;
+
+    return Qt::ItemIsEditable | flags;
+}
+
+QVariant WaveformTreeModel::headerData(int section, Qt::Orientation orientation,
+                                       int role) const
+{
+    if ((orientation == Qt::Horizontal) && (role == Qt::DisplayRole)) {
+        switch (section) {
+        case DataColumn::Name:
+            return "Name";
+        case DataColumn::Description:
+            return "Description";
+        case DataColumn::Color:
+            return "Color";
+        }
+    }
+
+    return QVariant();
+}
+
+QModelIndex WaveformTreeModel::index(int row, int column,
+                                     const QModelIndex &parent) const
+{
+    if (!hasIndex(row, column, parent))
+        return QModelIndex();
+
+    Identifiable *child;
+    switch (typeOfItemAt(parent)) {
+    case ItemType::Root:
+        child = m_store->at(row);
+        break;
+    case ItemType::Set:
+        child = static_cast<WaveformSet *>(at(parent))->at(row);
+        break;
+    default:
+        break;
+    }
+
+    if (child != nullptr)
+        // return createIndex(row, column, child->id());
+        return createIndex(row, column, child);
+
+    return QModelIndex();
+}
+
+void WaveformTreeModel::insertChildItemAt(const QModelIndex &parent, int index)
+{
+    Q_UNUSED(index);  // only append for now
+
+    switch (typeOfItemAt(parent)) {
+    case ItemType::Root:
+    {
+        auto *set = m_store->createSet("");
+        m_items.insert(set->id(), set);
+        break;
+    }
+    case ItemType::Set:
+    {
+        auto *set = static_cast<WaveformSet *>(at(parent));
+        // TODO change randomColor to randomNamedColor
+        auto *waveform = set->createWaveform("", "", Color::randomColor());
+        m_items.insert(waveform->id(), waveform);
+        break;
+    }
+    default:
+        break;
+    }
+}
+
+bool WaveformTreeModel::isInvisibleRootItem(const QModelIndex &index) const
+{
+    return !index.isValid();
+}
+
+bool WaveformTreeModel::isWaveformItem(const QModelIndex &index) const
+{
+    return typeOfItemAt(index) == ItemType::Waveform;
+}
+
+bool WaveformTreeModel::isWaveformSetItem(const QModelIndex &index) const
+{
+    return typeOfItemAt(index) == ItemType::Set;
+}
+
+bool WaveformTreeModel::insertRows(int row, int count,
+                                   const QModelIndex &parent)
+{
+    if (typeOfItemAt(parent) == ItemType::Waveform)
+        return false;
+
+    int startPos = rowCount(parent);
+    beginRemoveRows(parent, startPos, startPos + count - 1);
+    for (int i = 0; i < count; ++i)
+        insertChildItemAt(parent, row + i);
+    endRemoveRows();
+
+    return true;
+}
+
+QModelIndex WaveformTreeModel::parent(const QModelIndex &index) const
+{
+    // cannot use QModelIndex.parent() as it would call this method again
+
+// if (!index.isValid())
+// return QModelIndex();
+
+// Identifiable *item = at(index);
+// WaveformSet *set = dynamic_cast<WaveformSet *>(item);
+// if (set != nullptr)
+// return QModelIndex();
+
+// Waveform *waveform = dynamic_cast<Waveform *>(item);
+// if (waveform != nullptr) {
+// set = waveform->set();
+// return createIndex(m_store->indexOf(set), 0, set->id());
+// }
+
+// return QModelIndex();
+    switch (typeOfItemAt(index)) {
+    case ItemType::Waveform:
+    {
+        Waveform *waveform = dynamic_cast<Waveform *>(at(index));
+        WaveformSet *set = waveform->set();
+// return createIndex(m_store->indexOf(set), 0, set->id());
+        return createIndex(m_store->indexOf(set), 0, set);
+    }
+    default:
+        return QModelIndex();
+    }
+}
+
+bool WaveformTreeModel::removeRows(int row, int count,
+                                   const QModelIndex &parent)
+{
+    beginRemoveRows(parent, row, row + count - 1);
+    for (int i = 0; i < count; ++i)
+        deleteChildItemAt(parent, row + i);
+    endRemoveRows();
+
+    return true;
+}
+
+int WaveformTreeModel::rowCount(const QModelIndex &parent) const
+{
+    if (parent.column() > 0)
+        return 0;
+
+    if (!parent.isValid())
+        return m_store->count();
+
+    auto *set = dynamic_cast<WaveformSet *>(at(parent));
+    if (set != nullptr)
+        return set->count();
+
+    return 0;
+}
+
+int WaveformTreeModel::rowHeight(const QModelIndex &index) const
+{
+    if (isWaveformSetItem(index))
+        return 32;
+
+    return 20;
+}
+
+bool WaveformTreeModel::setData(const QModelIndex &index, const QVariant &value,
+                                int role)
+{
+    if (role != Qt::EditRole)
+        return false;
+
+    bool result = setDataForItemAt(index, value);
+    if (result)
+        emit dataChanged(index, index);
+
+    return result;
+}
+
+bool WaveformTreeModel::setDataForItemAt(const QModelIndex &index,
+                                         const QVariant &value) const
+{
+    auto *item = at(index);
+    auto *set = dynamic_cast<WaveformSet *>(item);
+    if (set != nullptr)
+        return setDataForObject(set, index.column(), value);
+
+    Waveform *waveform = dynamic_cast<Waveform *>(item);
+    if (waveform != nullptr)
+        return setDataForObject(waveform, index.column(), value);
+
+    return false;
+}
+
+bool WaveformTreeModel::setDataForObject(Waveform *waveform, int column,
+                                         const QVariant &value) const
+{
+    switch (column) {
+    case DATA_COLUMN_ID_NAME:
+        return waveform->setName(value.toString());
+    case DATA_COLUMN_ID_DESCRIPTION:
+        return waveform->setDescription(value.toString());
+    case DATA_COLUMN_ID_COLOR:
+        return waveform->setColor(value.value<QColor>());
+    default:
+        return false;
+    }
+}
+
+bool WaveformTreeModel::setDataForObject(WaveformSet *set, int column,
+                                         const QVariant &value) const
+{
+    switch (column) {
+    case DATA_COLUMN_ID_NAME:
+        return set->setName(value.toString());
+    default:
+        return false;
+    }
+}
+
+void WaveformTreeModel::setupItems()
+{
+    foreach(WaveformSet * set, m_store->sets()) {
+        m_items.insert(set->id(), set);
+
+        foreach(Waveform * waveform, set->waveforms()) {
+            m_items.insert(waveform->id(), waveform);
+        }
+    }
+}
+
+WaveformTreeModel::ItemType WaveformTreeModel::typeOfItemAt(
+    const QModelIndex &index) const
+{
+    if (!index.isValid())
+        return ItemType::Root;
+
+    Identifiable *item = at(index);
+    WaveformSet *set = dynamic_cast<WaveformSet *>(item);
+    if (set != nullptr)
+        return ItemType::Set;
+
+    Waveform *waveform = dynamic_cast<Waveform *>(item);
+    if (waveform != nullptr)
+        return ItemType::Waveform;
+
+    return ItemType::Unknown;
+}
