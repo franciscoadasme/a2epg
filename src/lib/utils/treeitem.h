@@ -5,6 +5,7 @@
 #include <QList>
 #include <QSize>
 
+namespace Utils {
 class TreeItem
 {
 public:
@@ -35,5 +36,6 @@ protected:
     QList<TreeItem *> m_children;
     TreeItem *m_parent;
 };
+}
 
 #endif // TREEITEM_H

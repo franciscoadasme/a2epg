@@ -8,7 +8,7 @@ namespace EPG {
 class WaveformSet;
 }
 
-class WaveformSetStoreItem : public TreeItem
+class WaveformSetStoreItem : public Utils::TreeItem
 {
 public:
     WaveformSetStoreItem(EPG::WaveformSetStore *store);

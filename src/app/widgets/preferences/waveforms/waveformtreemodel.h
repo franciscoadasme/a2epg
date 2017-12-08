@@ -7,7 +7,6 @@
 #include <QObject>
 #include <QVariant>
 #include "utils/treeitem.h"
-#include "itemkind.h"
 #include "waveformsetstoreitem.h"
 
 namespace EPG {
@@ -42,7 +41,7 @@ public:
 private:
     WaveformSetStoreItem *m_rootItem;
 
-    TreeItem *at(const QModelIndex &index) const;
+    Utils::TreeItem *at(const QModelIndex &index) const;
     QVariant displayValue(const QVariant &value) const;
 };
 

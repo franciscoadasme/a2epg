@@ -8,10 +8,10 @@ namespace EPG {
 class Waveform;
 }
 
-class WaveformSetItem : public TreeItem
+class WaveformSetItem : public Utils::TreeItem
 {
 public:
-    WaveformSetItem(EPG::WaveformSet *set, TreeItem *parent);
+    WaveformSetItem(EPG::WaveformSet *set, Utils::TreeItem *parent);
     ~WaveformSetItem();
 
     bool createChildAt(int index) override;

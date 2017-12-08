@@ -4,10 +4,10 @@
 #include "core/epg/waveform.h"
 #include "utils/treeitem.h"
 
-class WaveformItem : public TreeItem
+class WaveformItem : public Utils::TreeItem
 {
 public:
-    WaveformItem(EPG::Waveform *waveform, TreeItem *parent);
+    WaveformItem(EPG::Waveform *waveform, Utils::TreeItem *parent);
     ~WaveformItem();
 
     bool createChildAt(int index) override;
@@ -17,7 +17,7 @@ public:
     QVariant editDataAt(int column) const override;
     QFont fontAt(int column) const override;
     int kind() const override;
-    bool insertAt(int index, TreeItem *item);
+    bool insertAt(int index, Utils::TreeItem *item);
     bool isEditable(int column) const override;
     bool setData(int column, const QVariant &value) const override;
     QSize sizeHint(int column) const override;

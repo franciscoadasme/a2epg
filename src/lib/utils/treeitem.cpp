@@ -1,5 +1,7 @@
 #include "treeitem.h"
 
+using namespace Utils;
+
 TreeItem::TreeItem(TreeItem *parent) : m_parent(parent)
 {
 }
